@@ -1,0 +1,38 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Paint</title>
+</head>
+<br>
+<br>
+<br>
+<div class="container demo-page">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">Pintar imagen</h1>
+            <div class="text-center">
+                <button class="btn btn-primary run-demo" ng-click="train()" ng-disabled="disableTrain">START TRAINING</button>
+            </div>
+            <hr>
+        </div>
+        <div  class="button" ngf-select ng-model="file" ngf-pattern="'image/*'"
+              ngf-accept="'image/*'" ngf-max-size="2MB" ngf-min-height="80"
+              ngf-resize="{width: 125, height: 125 , centerCrop:true}">Select
+            <p class="text-center"><small>Original</small></p>
+            <img id='input' ngf-src="file">
+        </div>
+
+        <div ng-show="trainingStarted" class="row text-center">
+            <div class="col-sm-2">
+                <a class="thumbnail canvas-fix">
+                    <canvas id="canvas-demo4" width="125" height="125"></canvas>
+                </a>
+                <p class="text-center"><small>Painted by Network</small></p>
+            </div>
+        </div>
+        <hr ng-show="trainingStarted">
+        <div ng-if="trainingStarted" class="row text-center">
+            <strong>Iterations:</strong> <span id="iterations"></span>
+        </div>
+        <hr ng-show="trainingStarted">
+    </div>
+</div>
