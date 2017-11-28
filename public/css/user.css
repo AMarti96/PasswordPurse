@@ -1,0 +1,61 @@
+.done-true {
+    text-decoration: line-through;
+    color: #ffffff;
+}
+
+body{
+    color: #000000;
+}
+
+form{
+    color: #000000;
+}
+table, td, th {
+    border: 1px solid #ffffff;
+}
+table{
+    border-collapse: collapse;
+    width: 25%;
+}
+th{
+    text-align: center;
+}
+td{
+    text-align: center;
+}
+div.img{
+    margin: 5px;
+    border: 1px solid #ffffff;
+    float: left;
+    width: 180px;
+}
+div.img:hover {
+    border: 1px solid #ffffff;
+}
+div.img img {
+    width: 100%;
+    height: auto;
+}
+div.desc {
+    padding: 15px;
+    text-align: center;
+}
+.cropArea {
+    background: #E4E4E4;
+    overflow: hidden;
+    width:500px;
+    height:350px;
+}
+.button {
+    background-color: #ffffff;
+    border: none;
+    color: #000000;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+

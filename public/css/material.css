@@ -1,0 +1,20 @@
+ #login:focus{
+     color: #000000;
+     border-color: #000000;
+ }
+ #login .md-input{
+    color: #000000;
+    border-color: #000000;
+}
+ #login2:focus{
+     color: #000000;
+     border-color: #000000;
+ }
+ #login2 .md-input{
+     color: #000000;
+     border-color: #000000;
+ }
+
+ * { box-sizing: border-box; }
+
+ body { font-family: sans-serif; }
