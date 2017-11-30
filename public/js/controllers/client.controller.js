@@ -36,7 +36,7 @@
 
             var data={
                 category: $scope.category,
-                secret: objectHash.sha1($scope.secret),
+                secret: CryptoJS.AES.encrypt($scope.secret,$scope.key).toString(),
                 token:$sessionStorage.get("token")
             };
 
@@ -52,9 +52,13 @@
 
         $scope.getSecrets=function () {
 
+            var password=CryptoJS.RIPEMD160($scope.key).toString();
+            var passHex=secrets.str2hex(password);
+            var shares=secrets.share(passHex,3,3,512);
 
             var data={
                 category: $scope.category,
+                parts:shares,
                 token:$sessionStorage.get("token")
             };
 

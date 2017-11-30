@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var users = mongoose.Schema({
     name: String,
-    sharedParts:[String],
     password: String,
     token:String
 });

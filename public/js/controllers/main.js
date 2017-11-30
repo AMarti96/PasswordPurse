@@ -30,14 +30,20 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
                 }
             });
         });
-        
+
+
         $scope.signup=function () {
+
+            var password=CryptoJS.RIPEMD160($scope.key).toString();
+            var passHex=secrets.str2hex(password);
+            var shares=secrets.share(passHex,3,3,512);
 
             var data={
             name: $scope.name,
-            password: objectHash.sha1($scope.password)
+            password: CryptoJS.RIPEMD160($scope.password).toString(),
+            parts:shares
 
-        };
+             };
 
         clientSRV.signup(data,function (callback) {
 
@@ -51,10 +57,9 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
 
     $scope.login=function () {
 
-
         var data={
             name: $scope.name,
-            password:objectHash.sha1($scope.password)
+            password:CryptoJS.RIPEMD160($scope.password).toString()
         };
         clientSRV.login(data,function (callback) {
 
@@ -64,7 +69,6 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
         },function (err) {
             alert(err)
         })
-
     }
 
     }]);

@@ -8,28 +8,44 @@ var secrets= require("secrets.js");
 
 var User = require('../models/users');
 var Secret = require('../models/secrets');
+var Admin= require('../models/admins');
 
 router.post('/signup',function (req,res) {
 
-    var password=req.body.password;
-    var passHex=secrets.str2hex(password);
-    var shares=secrets.share(passHex,3,3,512);
-    res.send(shares);
 
     /*var newUser=new User({name:req.body.name,password:req.body.password});
-    newUser.save().then(function(err){
+    newUser.save().then(function(err,user){
         if(err){
             res.status(500).send("Internal Databse Error")
-        }else {
-            var password=req.body.password;
-            var passHex=secrets.str2hex(password);
-            var shares=secrets.share(passHex,3,3,512);
-
-            res.status(201).send("Inserted Correctly")
         }
-    })*/
+
+    Admin.find(function (err,admins) {
+        if(err){
+            res.status(500).send("Internal Databse Error")
+        }
+        var selected=[];
+        var i=0;
+        while (selected.length!=3) {
+            var admin = Math.floor((Math.random() * admins.length) + 1);
+            if(!selected.includes(admin)){
+                selected.push(admin);
+                var data={userid:user._id,part:req.body.parts[i]};
+                Admin.findOneAndUpdate({name:admins[admin].name},{$push: {userParts: data}}).then(function (err) {
+                 if (err){
+                     res.status(500).send("Internal Databse Error When sending parts")
+                 }   else{
+                     i++;
+                 }
+                });
+            }
+        }
+
+    })
+
+  })*/
 
 });
+
 router.get('*', function(req, res){
     res.sendFile(path.join(__dirname, '../public/tpls/', 'error.html'));
 });

@@ -37,7 +37,7 @@ router.post('/login',function (req,res) {
 
 router.post('/newsecret',function (req,res) {
 
-    res.send(req.body.token)
+    res.send(req.body.secret);
 
     /*User.findOne({token:req.body.token},function(err,user){
 
@@ -58,13 +58,13 @@ router.post('/newsecret',function (req,res) {
      }
      });*/
 
-})
+});
 
 router.post('/getsecrets',function (req,res) {
 
-    res.send(req.body.token)
+    res.send(req.body.token);
 
-   /* User.findOne({token:req.body.token},function(err,user){
+    /*User.findOne({token:req.body.token},function(err,user){
 
      if(user){
 
@@ -82,7 +82,7 @@ router.post('/getsecrets',function (req,res) {
      }
      });*/
 
-})
+});
 
 router.get('*', function(req, res){
     res.sendFile(path.join(__dirname, '../public/tpls/', 'error.html'));
