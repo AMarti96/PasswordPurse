@@ -2,39 +2,26 @@
     <meta charset="UTF-8">
     <title>Login Purse</title>
 </head>
+<link rel="stylesheet" href="css/user.css">
 <div class="container">
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="row">
-        <h1 class="text-center demos-header">Login Page</h1>
-    </div>
-    <div class="row">
+    <div id="login-box">
+        <div class="logo">
+            <img src="https://www.lockitsolutions.com/blog/wp-content/uploads/2015/05/lockitLogo.png" class="img img-responsive img-circle center-block"/>
+            <h1 class="logo-caption"><span class="tweak">L</span>ogin</h1>
+        </div><!-- /.logo -->
+        <div class="controls">
+            <input type="text" name="username" placeholder="Username" class="form-control" ng-model="name"/>
+            <input type="password" name="username" placeholder="Password" class="form-control" ng-model="password" />
+            <input type="password" name="key" placeholder="Key" class="form-control" ng-model="key" />
+            <button type="button" class="btn btn-default btn-block btn-custom" ng-click="login()">Iniciar Sesión</button>
+            <button type="button" class="btn btn-default btn-block btn-custom" ng-click="signup()">Registarse</button>
+        </div><!-- /.controls -->
+    </div><!-- /#login-box -->
+</div><!-- /.container -->
+<div id="particles-js"></div>
 
-        <form>
 
-            <div class="form-group">
-                <label>Name:</label>
-                <input type="text" ng-model="name" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Password:</label>
-                <input type="password" ng-model="password" class="form-control">
-            </div>
-            <div class="form-group">
-            <label>Key:</label>
-            <input type="password" ng-model="key" class="form-control">
-            </div>
 
-            <input class="btn btn-primary" type="submit" ng-click="signup()" value="Sign Up">
-            <input class="btn btn-primary" type="submit" ng-click="login()"  value="Login">
-
-        </form>
-
-    </div>
-    <hr>
-</div>
 
 
 <!-- build:js({.tmp,app}) ../scripts/scripts.js -->

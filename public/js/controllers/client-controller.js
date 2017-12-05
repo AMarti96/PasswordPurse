@@ -1,6 +1,131 @@
 /**
  * Created by Lazarus of Bethany on 28/11/2017.
  */
+$.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js", function(){
+    particlesJS('particles-js',
+        {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    },
+                    "image": {
+                        "width": 100,
+                        "height": 100
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true,
+            "config_demo": {
+                "hide_card": false,
+                "background_color": "#b61924",
+                "background_image": "",
+                "background_position": "50% 50%",
+                "background_repeat": "no-repeat",
+                "background_size": "cover"
+            }
+        }
+    );
+
+});
+
+
+
+
+
 
 (function() {
     'use strict';
@@ -42,24 +167,33 @@
 
         $scope.newSecret=function () {
 
-            var data={
-                category: $scope.category,
-                secret: CryptoJS.AES.encrypt($scope.secret,CryptoJS.RIPEMD160($scope.key).toString()).toString(),
-                token:$sessionStorage.get("token")
-            };
+            if(typeof $scope.category!=='undefined'&&typeof $scope.secret!=='undefined')
+            {
+                var data={
+                    category: $scope.category,
+                    secret: CryptoJS.AES.encrypt($scope.secret,CryptoJS.RIPEMD160($scope.key).toString()).toString(),
+                    token:$sessionStorage.get("token")
+                };
 
-            clientSRV.newSecret(data,function (callback) {
+                clientSRV.newSecret(data,function (callback) {
+                    if (callback==='undefined'){
+                        alert('Error')
+                    }
+                    else{
+                        alert(callback)
+                    }
 
-            alert(callback)
 
-            },function (err) {
-                alert(err)
-            })
-
+                },function (err) {
+                    alert(err)
+                })
+            }
+           else{
+                $scope.textarea=('Error: Faltan campos por rellenar')
+            }
         };
 
         $scope.getSecrets=function () {
-
             /*var password=CryptoJS.RIPEMD160($scope.key).toString();
             var passHex=secrets.str2hex(password);
             var shares=secrets.share(passHex,3,3,512);
@@ -67,26 +201,37 @@
             console.log(secrets.hex2str(combine))
             console.log(password)*/
 
-            var data={
-                category: $scope.category,
-                token:$sessionStorage.get("token")
-            };
+            if(typeof $scope.category!=='undefined'){
+                var data={
+                    category: $scope.category,
+                    token:$sessionStorage.get("token")
+                };
 
-            clientSRV.getSecrets(data,function (callback) {
+                clientSRV.getSecrets(data,function (callback) {
 
-                var secrets=[];
-                var callsecrets=callback[0].secrets;
+                    var secrets=[];
+                    var callsecrets=callback[0].secrets;
+                    var text='';
+
+                    for(var i=0;i<callsecrets.length;i++) {
+                        secrets.push(convertFromHex(CryptoJS.AES.decrypt(callsecrets[i], CryptoJS.RIPEMD160($scope.key).toString()).toString()))
+                        text=text+ secrets[i]+' ,'
+                    }
+                    $scope.textarea="Secrets obtained correctly: "+text;
+                    //alert("Secrets obtained correctly: "+secrets);
+                    $scope.category='';
+                    $scope.secret='';
+                    $scope.key='';
 
 
-               for(var i=0;i<callsecrets.length;i++) {
-                   secrets.push(convertFromHex(CryptoJS.AES.decrypt(callsecrets[i], CryptoJS.RIPEMD160($scope.key).toString()).toString()))
+                },function (err) {
+                    $scope.textarea=('Error: Faltan campos por rellenar o se han introducido mal los datos')
+                })
+            }
+            else{
+                $scope.textarea=('Error: Falta introducir la categoria')
+            }
 
-               }
-               alert("Secrets obtained correctly \n"+secrets)
-
-            },function (err) {
-                alert(err)
-            })
 
         }
 
