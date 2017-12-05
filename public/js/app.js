@@ -22,18 +22,6 @@ angular
             templateUrl: 'tpls/clientPage.html',
             controller: 'ClientPageCtrl'
             })
-            .when('/image-filters', {
-                templateUrl: 'tpls/image-filters.html',
-                controller: 'ImageFiltersCtrl'
-            })
-            .when('/paint-an-image', {
-                templateUrl: 'tpls/paint-an-image.html',
-                controller: 'PaintAnImageCtrl'
-            })
-            .when('/classify-colors', {
-                templateUrl: 'tpls/classify-colors.html',
-                controller: 'ClassifyColors'
-            })
             .otherwise({
                 redirectTo: '/'
             });
