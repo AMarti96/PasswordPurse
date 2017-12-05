@@ -47,6 +47,7 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
 
         clientSRV.signup(data,function (callback) {
 
+            $sessionStorage.put("token",callback);
             $location.path('/clientPage')
 
         },function (err) {

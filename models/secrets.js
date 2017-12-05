@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var secrets = mongoose.Schema({
 
     category: String,
-    user: {type: Schema.ObjectId, ref: 'users'},
+    user: String,
     secrets: [String]
 
 });

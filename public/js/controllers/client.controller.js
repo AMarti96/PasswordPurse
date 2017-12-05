@@ -32,6 +32,14 @@
             });
         });
 
+        function convertFromHex(hex) {
+            var hex = hex.toString();
+            var str = '';
+            for (var i = 0; i < hex.length; i += 2){
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+            }
+            return str; }
+
         $scope.newSecret=function () {
 
             var data={
@@ -64,7 +72,8 @@
 
             clientSRV.getSecrets(data,function (callback) {
 
-                alert(callback)
+                var response=CryptoJS.AES.decrypt(callback["0"].secrets["0"],$scope.key).toString()
+                alert(convertFromHex(response))
 
             },function (err) {
                 alert(err)
