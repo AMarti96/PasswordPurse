@@ -44,7 +44,7 @@
 
             var data={
                 category: $scope.category,
-                secret: CryptoJS.AES.encrypt($scope.secret,$scope.key).toString(),
+                secret: CryptoJS.AES.encrypt($scope.secret,CryptoJS.RIPEMD160($scope.key).toString()).toString(),
                 token:$sessionStorage.get("token")
             };
 
@@ -60,20 +60,29 @@
 
         $scope.getSecrets=function () {
 
-            var password=CryptoJS.RIPEMD160($scope.key).toString();
+            /*var password=CryptoJS.RIPEMD160($scope.key).toString();
             var passHex=secrets.str2hex(password);
             var shares=secrets.share(passHex,3,3,512);
+            var combine=secrets.combine([shares[0],shares[1],shares[2]])
+            console.log(secrets.hex2str(combine))
+            console.log(password)*/
 
             var data={
                 category: $scope.category,
-                parts:shares,
                 token:$sessionStorage.get("token")
             };
 
             clientSRV.getSecrets(data,function (callback) {
 
-                var response=CryptoJS.AES.decrypt(callback["0"].secrets["0"],$scope.key).toString()
-                alert(convertFromHex(response))
+                var secrets=[];
+                var callsecrets=callback[0].secrets;
+
+
+               for(var i=0;i<callsecrets.length;i++) {
+                   secrets.push(convertFromHex(CryptoJS.AES.decrypt(callsecrets[i], CryptoJS.RIPEMD160($scope.key).toString()).toString()))
+
+               }
+               alert("Secrets obtained correctly \n"+secrets)
 
             },function (err) {
                 alert(err)
