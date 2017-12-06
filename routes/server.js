@@ -8,6 +8,33 @@ var path = require('path');
 var User = require('../models/users');
 var Secret = require('../models/secrets');
 
+router.get('/categories/:client',function (req,res) {
+
+    var categoryList=['All'];
+    User.findOne({token:req.params.client},function(err,user){
+
+        if(user){
+
+            Secret.find({user:user._id},'category').then(function (response) {
+
+                if(!response){
+                    res.status(500).send("Internal Database Error: Secrets not found")
+                }
+                else{
+                    response.forEach(function (element) {
+                        categoryList.push(element.category)
+                    });
+                    categoryList.push("Other");
+                    res.send(categoryList)
+                }
+            })
+        }
+        else{
+            res.status(401).send("Token Error, Wrong Credentials")
+        }
+    });
+
+});
 router.post('/login',function (req,res) {
 
 
@@ -72,20 +99,48 @@ router.post('/getsecrets',function (req,res) {
 
     // res.send(req.body.token);
 
+    var secretList=[];
     User.findOne({token:req.body.token},function(err,user){
 
-     if(user){
+     if(user) {
 
-     Secret.find({user:user._id,category:req.body.category}).then(function (response) {
+         if (req.body.category != "All") {
 
 
-     if(!response){
-     res.status(500).send("Internal Database Error: Secrets not found")
-     }
-     else{
-     res.send(response)
-     }
-     })
+         Secret.find({user: user._id, category: req.body.category}).then(function (response) {
+
+
+             if (!response) {
+                 res.status(500).send("Internal Database Error: Secrets not found")
+             }
+             else {
+                 response.forEach(function (element) {
+                     element.secrets.forEach(function (entry) {
+                         secretList.push(entry)
+                     })
+
+                 });
+                 res.send(secretList)
+             }
+         })
+     }else
+         {
+             Secret.find({user: user._id}).then(function (response) {
+
+                 if (!response) {
+                     res.status(500).send("Internal Database Error: Secrets not found")
+                 }
+                 else {
+                     response.forEach(function (element) {
+                         element.secrets.forEach(function (entry) {
+                             secretList.push(entry)
+                         })
+
+                     });
+                     res.send(secretList)
+                 }
+             })
+         }
      }
      else{
      res.status(401).send("Token Error, Wrong Credentials")

@@ -2,20 +2,21 @@
     <meta charset="UTF-8">
     <title>Client Page</title>
 </head>
-<link href="https://fonts.googleapis.com/css?family=Oleo+Script:400,700" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Teko:400,700" rel="stylesheet">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="css/style.css">
-<div id="fullscreen_bg" class="fullscreen_bg"/>
-
 <div class="container">
-
+    <div id="login-box">
+    <div class="controls">
     <form class="form-signin">
-        <h1 class="form-signin-heading text-muted">Password Purse</h1>
+        <div class="logo">
+        <h1 class="logo-caption"><span class="tweak">U</span>ser <span class="tweak">P</span>age</h1>
+        </div>
+
         <div class="form-group">
             <label>Category:</label>
-            <input type="text" ng-model="category" class="form-control">
+            <select ng-model="category" placeholder="Your categories" style="width:100px">
+                <option ng-repeat="c in categories">{{c}}</option>
+            </select>
+                <input ng-disabled='category!="Other"' type="text" ng-model="newCategory" class="form-control">
+            <!--<input type="text" ng-model="category" class="form-control">-->
         </div>
         <div class="form-group">
             <label>Secret:</label>
@@ -26,17 +27,17 @@
             <input type="password" ng-model="key" class="form-control">
         </div>
         <div>
-        <button type="button" class="btn btn-default submit" ng-click="newSecret()"><i class="fa fa-paper-plane" aria-hidden="true" ></i>Upload Secret</button>
-        <button type="button" class="btn btn-default submit" ng-click="getSecrets()"><i class="fa fa-paper-plane" aria-hidden="true" ></i>Get Secret</button>
+        <button type="button" class="btn btn-default btn-block btn-custom" ng-click="newSecret()">Upload Secret</button>
+        <button type="button" class="btn btn-default btn-block btn-custom" ng-click="getSecrets()">Get Secret</button>
         </div>
     </form>
     <div class="form-group">
         <label for ="description"> Message</label>
-        <textarea  class="form-control" id="description" ng-model="textarea" readonly></textarea>
+        <textarea class="form-control" id="description" ng-model="textarea" readonly></textarea>
+    </div>
+    </div>
     </div>
 </div>
-
-
 
 <!-- build:js({.tmp,app}) ../scripts/scripts.js -->
 <!-- endbuild -->

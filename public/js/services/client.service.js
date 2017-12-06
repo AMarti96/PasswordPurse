@@ -6,6 +6,23 @@
     var app = angular.module('gitHubApp');
     app.service('clientSRV', ['$http',function ($http) {
 
+        this.getCategories=function (client,callback,error) {
+
+            var req = {
+                method: 'GET',
+                url: '/server/categories/'+client,
+                headers: {'Content-Type': 'application/json'}
+
+            };
+
+            $http(req).then(function (response) {
+
+                callback (response.data);
+
+            }).catch(function (err) {
+                error(err.data)
+            });
+        }
 
         this.signup=function (newClient,callback,error) {
 

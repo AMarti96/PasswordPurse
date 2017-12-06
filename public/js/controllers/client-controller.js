@@ -13,7 +13,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                     }
                 },
                 "color": {
-                    "value": "#ffffff"
+                    "value": "#ff475a"
                 },
                 "shape": {
                     "type": "circle",
@@ -44,7 +44,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                     "random": true,
                     "anim": {
                         "enable": false,
-                        "speed": 40,
+                        "speed": 20,
                         "size_min": 0.1,
                         "sync": false
                     }
@@ -58,7 +58,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                 },
                 "move": {
                     "enable": true,
-                    "speed": 6,
+                    "speed": 3,
                     "direction": "none",
                     "random": false,
                     "straight": false,
@@ -75,7 +75,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                 "events": {
                     "onhover": {
                         "enable": true,
-                        "mode": "repulse"
+                        "mode": "bubble"
                     },
                     "onclick": {
                         "enable": true,
@@ -91,11 +91,11 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                         }
                     },
                     "bubble": {
-                        "distance": 400,
-                        "size": 40,
+                        "distance": 200,
+                        "size": 10,
                         "duration": 2,
                         "opacity": 8,
-                        "speed": 3
+                        "speed": 2
                     },
                     "repulse": {
                         "distance": 200
@@ -122,11 +122,6 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
 });
 
-
-
-
-
-
 (function() {
     'use strict';
 
@@ -135,6 +130,8 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
         $rootScope.navbarActive = "home";
 
+        $scope.categories=[];
+        $scope.newCategory="";
         var elements = $('.reveal');
         var win = $(window);
         elements.css('opacity', 0);
@@ -165,12 +162,33 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
             }
             return str; }
 
+        angular.element(document).ready(function () {
+
+            clientSRV.getCategories($sessionStorage.get("token"),function (callback) {
+
+                if (callback==='undefined'){
+                    alert('Error')
+                }
+                else{
+                    $scope.categories=callback
+                }
+            })
+
+        });
+
         $scope.newSecret=function () {
 
             if(typeof $scope.category!=='undefined'&&typeof $scope.secret!=='undefined')
             {
+                var category="";
+                if($scope.category!="Other"){
+                    category=$scope.category;
+                }
+                else{
+                    category=$scope.newCategory;
+                }
                 var data={
-                    category: $scope.category,
+                    category: category,
                     secret: CryptoJS.AES.encrypt($scope.secret,CryptoJS.RIPEMD160($scope.key).toString()).toString(),
                     token:$sessionStorage.get("token")
                 };
@@ -181,6 +199,12 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                     }
                     else{
                         alert(callback)
+                        if($scope.category="Other"){
+                            location.reload()
+                        }
+                        $scope.category='';
+                        $scope.secret='';
+                        $scope.key='';
                     }
 
 
@@ -189,7 +213,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                 })
             }
            else{
-                $scope.textarea=('Error: Faltan campos por rellenar')
+                $scope.textarea=('Error: Missing fields')
             }
         };
 
@@ -209,8 +233,9 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
                 clientSRV.getSecrets(data,function (callback) {
 
+
                     var secrets=[];
-                    var callsecrets=callback[0].secrets;
+                    var callsecrets=callback;
                     var text='';
 
                     for(var i=0;i<callsecrets.length;i++) {
@@ -225,11 +250,11 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
 
                 },function (err) {
-                    $scope.textarea=('Error: Faltan campos por rellenar o se han introducido mal los datos')
+                    $scope.textarea=('Error: Missing fields or wrong credentials ')
                 })
             }
             else{
-                $scope.textarea=('Error: Falta introducir la categoria')
+                $scope.textarea=('Error: Category is missing')
             }
 
 

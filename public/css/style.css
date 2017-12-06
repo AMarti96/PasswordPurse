@@ -28,7 +28,7 @@ body {
   left: 0;
   background-size: cover;
   background-position: 50% 50%;
-  background-image: url('http://cleancanvas.herokuapp.com/img/backgrounds/color-splash.jpg');
+  background-image: url('http://cleancanvas.herokuapp.com/img/backgrounds/flower.jpg');
   background-repeat:repeat;
 }
 .form-signin {
@@ -76,7 +76,7 @@ body {
 .form-signin-heading {
   color: #fff;
   text-align: center;
-  text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
 }
 .submit{
   border: 1px solid #fff;
