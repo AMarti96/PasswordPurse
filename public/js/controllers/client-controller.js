@@ -200,9 +200,11 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
                     else{
                         alert(callback)
                         if($scope.category="Other"){
-                            location.reload()
+
+                            $scope.categories.splice( $scope.categories.indexOf("Other"),0, $scope.newCategory);
                         }
                         $scope.category='';
+                        $scope.newCategory='';
                         $scope.secret='';
                         $scope.key='';
                     }
