@@ -1,6 +1,3 @@
-/**
- * Created by Lazarus of Bethany on 28/11/2017.
- */
 var express = require('express');
 var router = express.Router();
 var path = require('path');
@@ -9,6 +6,35 @@ var HashJS= require('crypto-js/sha1');
 var User = require('../models/users');
 var Secret = require('../models/secrets');
 var Admin= require('../models/admins');
+var bigInt = require("big-integer");
+var nonRep = require('../../PasswordPurse/routes/nonRepudiation');
+var p=bigInt.zero;
+var q=bigInt.zero;
+var n=bigInt.zero;
+var d=bigInt.zero;
+var e= bigInt(65537);
+
+function genNRSA(){
+
+    var base=bigInt(2);
+    var prime=false;
+
+    while (!prime) {
+        p = bigInt.randBetween(base.pow(255), base.pow(256).subtract(1));
+        prime = bigInt(p).isPrime()
+
+    }
+    prime = false;
+    while (!prime) {
+        q = bigInt.randBetween(base.pow(255), base.pow(256).subtract(1));
+        prime = bigInt(q).isPrime()
+    }
+    var phi = p.subtract(1).multiply(q.subtract(1));
+    n = p.multiply(q);
+    d = e.modInv(phi);
+
+};
+
 
 router.post('/signup',function (req,res) {
 
@@ -24,13 +50,13 @@ router.post('/signup',function (req,res) {
             res.status(500).send("Internal Databse Error: Admins not found")
         }
         var selected=[];
-        var info=[]
+        var info=[];
         while (selected.length!=3) {
 
             var admin = Math.floor((Math.random() * admins.length));
             if(!selected.includes(admin)){
                 var data={id:admin,userid:user._id,part:req.body.parts[selected.length]};
-                info.push(data)
+                info.push(data);
                 selected.push(admin);
             }
         }
@@ -56,6 +82,95 @@ router.post('/signup',function (req,res) {
     })
 
   })
+
+});
+
+router.post('/getusers',function (req,res) {
+
+    Admin.findOne({name:req.body.name},function(err,admin){
+
+        if(admin) {
+
+            var users = [];
+
+            admin.userParts.forEach(function (element) {
+                var value = JSON.parse(element);
+                User.findOne({_id: value.userid}, function (err, user) {
+                    users.push(user.name);
+                    if(users.length  === admin.userParts.length) {
+                        res.send(users);
+                    }
+                });
+            });
+        }
+        else{
+            res.status(400).send("Wrong Credentials")
+        }
+    });
+
+});
+
+router.post('/login',function (req,res) {
+
+    Admin.findOne({name:req.body.name,password:req.body.password},function(err,admin){
+
+        if(admin){
+
+            var token=HashJS([admin._id,req.body.password,Date.now()].toString()).toString();
+            Admin.findOneAndUpdate({name:req.body.name,password:req.body.password},{token:token}).then(function (err) {
+                if(!err){
+                    res.status(500).send("Internal Database Error: Token not updated")
+                }
+                else{
+                    res.send(token)
+                }
+            })
+
+        }
+        else{
+            res.status(400).send("Wrong Credentials")
+        }
+    });
+
+});
+
+router.post('/repudiationSigned',function (req,res) {
+
+
+    if(n==bigInt.zero){
+        genNRSA(function () {})
+    }
+    else{
+        console.log("Message from "+ req.body.origin)
+
+        nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
+
+            if(buff === 1){
+
+                nonRep.returnMessagefromServer(req.body.origin,req.body.destination,req.body.message,d,n,function (data) {
+
+                    res.send(data)
+                });
+            }
+            else {
+                console.log("Algo paso");
+                res.send("ERROR")
+            }
+        });
+    }
+});
+
+
+router.get('/getServer', function (req,res) {
+    if(n==bigInt.zero){
+        genNRSA()
+        console.log("RSA Admin Generated Correctly");
+    }
+    var data={
+        modulus:n,
+        serverE:e
+    };
+    res.send(data)
 
 });
 

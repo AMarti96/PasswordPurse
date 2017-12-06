@@ -22,6 +22,14 @@ angular
             templateUrl: 'tpls/clientPage.html',
             controller: 'ClientPageCtrl'
             })
+            .when('/admin', {
+                templateUrl: 'tpls/adminLogin.html',
+                controller: 'AdminMainCtrl'
+            })
+            .when('/adminPage', {
+                templateUrl: 'tpls/adminPage.html',
+                controller: 'AdminCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });

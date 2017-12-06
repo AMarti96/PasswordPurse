@@ -126,7 +126,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
     'use strict';
 
     var app = angular.module('gitHubApp');
-    app.controller('ClientPageCtrl',['clientSRV','$rootScope','$window','$scope','$location','$sessionStorage', function (clientSRV,$rootScope, $window,$scope,$location,$sessionStorage) {
+    app.controller('ClientPageCtrl',['clientSRV','$rootScope','$window','$scope','$location','$sessionStorage', function (clientSRV, $rootScope, $window, $scope, $location, $sessionStorage) {
 
         $rootScope.navbarActive = "home";
 
@@ -164,12 +164,15 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
         angular.element(document).ready(function () {
 
-            clientSRV.getCategories($sessionStorage.get("token"),function (callback) {
+            var token = $sessionStorage.get("token");
+
+            clientSRV.getCategories(token,function (callback) {
 
                 if (callback==='undefined'){
                     alert('Error')
                 }
                 else{
+                    console.log(callback);
                     $scope.categories=callback
                 }
             })

@@ -33,10 +33,12 @@ mongoose.connect("mongodb://localhost:27017/purse", function (err) {
 var Client=require("./client");
 var Server = require("./server");
 var AdminServer = require("./adminServer");
+var TTPServer = require("./ttpServer");
 
 app.use("/client",Client);
 app.use("/server",Server);
 app.use("/adminServer",AdminServer);
+app.use("/ttp",TTPServer);
 
 module.exports=app;
 

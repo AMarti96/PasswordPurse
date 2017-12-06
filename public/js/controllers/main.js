@@ -5,7 +5,7 @@
 'use strict';
 
 var app = angular.module('gitHubApp');
-app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$location','$sessionStorage', function (clientSRV,$rootScope, $window,$scope,$location,$sessionStorage) {
+app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$location','$sessionStorage', function (clientSRV, $rootScope, $window, $scope, $location, $sessionStorage) {
 
     $rootScope.navbarActive = "home";
 
@@ -63,7 +63,6 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
             password:CryptoJS.RIPEMD160($scope.password).toString()
         };
         clientSRV.login(data,function (callback) {
-
             $sessionStorage.put("token",callback);
             $location.path('/clientPage')
 
