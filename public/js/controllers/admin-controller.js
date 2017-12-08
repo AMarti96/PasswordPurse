@@ -28,7 +28,6 @@
                 name: $sessionStorage.get("AdminName")
             };
             adminSRV.getUsers(data,function (callback) {
-
                 $scope.users = callback;
 
             },function (err) {
@@ -93,6 +92,29 @@
             });
         });
 
+        $scope.getadmins=function () {
+            if(typeof $scope.user!=='undefined'){
+                adminSRV.getadmins($scope.user,function (data) {
+                    $scope.admins=data;
+                })
+            }
+        };
+
+        $scope.loginAdmins=function () {
+
+            var data={
+                admin1:$scope.admins[0],
+                passadmin1:$scope.admin1,
+                admin2:$scope.admins[1],
+                passadmin2:$scope.admin2,
+                admin3:$scope.admins[2],
+                passadmin3:$scope.admin3
+            };
+
+            adminSRV.loginadmins(data,function (data) {
+                $scope.parts=data;
+            })
+        };
         $scope.getUserSecrets=function () {
 
             if (($scope.user) && ($scope.category) != null) {
@@ -108,7 +130,7 @@
                 nonRepMOD.sendMessageToAdminSever(origin, destination,thirdpart,server,sharedKey,d,n,e,message,function (buff) {
 
                     if (buff.origin === undefined) {
-                        console.log("WTF?")
+                        console.log("Error when sending message to admin")
                     }
                     else {
                         nonRepMOD.checkPayload(buff.origin, buff.destination, buff.message, serverE, serverN, buff.signature, function (res) {
@@ -122,12 +144,12 @@
                                     nonRepMOD.checkPayloadTTP(buff2.origin, buff2.destination, buff2.key, buff2.TTPE, buff2.modulusTTP, buff2.thirdpart, buff2.signature, function (res2) {
 
                                         if (res2 === 1) {
-                                            console.log("La clave compartida es: " + sharedKey);
-                                            console.log("El mensaje es: " + message);
+                                            console.log("The shared key is: " + sharedKey);
+                                            console.log("The message is: " + message);
                                         }
 
                                         else {
-                                            $scope.results = "ERROR MASMASTICO"
+                                            $scope.results = "Error when checking payload"
                                         }
 
                                     });
@@ -135,7 +157,7 @@
                                 });
                             }
                             else {
-                                $scope.results = "ERROR WAPO"
+                                $scope.results = "Something went wrong..."
                             }
                         });
                     }

@@ -86,22 +86,26 @@ router.post('/signup',function (req,res) {
 });
 
 router.post('/getusers',function (req,res) {
-
-    Admin.findOne({name:req.body.name},function(err,admin){
+    var users = [];
+    Admin.findOne({name:req.body.name},'userParts',function(err,admin){
 
         if(admin) {
 
-            var users = [];
-
             admin.userParts.forEach(function (element) {
                 var value = JSON.parse(element);
-                User.findOne({_id: value.userid}, function (err, user) {
-                    users.push(user.name);
-                    if(users.length  === admin.userParts.length) {
+                User.findById(value.userid, function (err, user) {
+
+                    if(user){
+                        users.push(user.name);
+                    }
+                    if(users.length===admin.userParts.length){
                         res.send(users);
                     }
+
                 });
+
             });
+
         }
         else{
             res.status(400).send("Wrong Credentials")
@@ -172,6 +176,56 @@ router.get('/getServer', function (req,res) {
     };
     res.send(data)
 
+});
+router.get('/getadmins/:user', function (req,res) {
+    var adminlist=[];
+
+    User.findOne({name:req.params.user},function (err, user) {
+        if(user){
+            Admin.find().then(function (admins) {
+                admins.forEach(function (element) {
+                    var value = JSON.parse(element.userParts);
+                        if(value.userid==user._id){
+                            adminlist.push(element.name);
+                        }
+                });
+                res.send(adminlist);
+            })
+
+        }
+        else{
+            res.status(500).send("User not found")
+        }
+    })
+});
+router.post('/loginadmins',function (req, res) {
+   var parts=[];
+    Admin.findOne({name:req.body.admin1,password:req.body.passadmin1},function (err, admin) {
+        if(admin){
+            parts.push(JSON.parse(admin.userParts).part);
+            Admin.findOne({name:req.body.admin2,password:req.body.passadmin2},function (err, admin) {
+                if(admin){
+                    parts.push(JSON.parse(admin.userParts).part);
+                    Admin.findOne({name:req.body.admin3,password:req.body.passadmin3},function (err, admin) {
+                        if(admin){
+                            parts.push(JSON.parse(admin.userParts).part);
+
+                            res.send(parts);
+                        }
+                        else{
+                            res.status(500).send("Admin not found")
+                        }
+                    });
+                }
+                else{
+                    res.status(500).send("Admin not found")
+                }
+            });
+        }
+        else{
+            res.status(500).send("Admin not found")
+        }
+    });
 });
 
 router.get('*', function(req, res){

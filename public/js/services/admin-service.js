@@ -74,7 +74,40 @@
             });
         };
 
+        this.getadmins=function (data,callback,error) {
+            var req = {
+                method: 'GET',
+                url: '/adminServer/getadmins/'+data,
+                headers: {'Content-Type': 'application/json'}
 
+            };
+
+            $http(req).then(function (response) {
+
+                callback (response.data);
+
+            }).catch(function (err) {
+                error(err.data)
+            });
+        };
+
+        this.loginadmins=function (data, callback,error) {
+            var req = {
+                method: 'POST',
+                url: '/adminServer/loginadmins',
+                headers: {'Content-Type': 'application/json'},
+                data:data
+
+            };
+
+            $http(req).then(function (response) {
+
+                callback (response.data);
+
+            }).catch(function (err) {
+                error(err.data)
+            });
+        }
 
     }]);
 })();

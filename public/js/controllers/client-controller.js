@@ -198,7 +198,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
                 clientSRV.newSecret(data,function (callback) {
                     if (callback==='undefined'){
-                        alert('Error')
+                        $scope.textarea=('Error: You have to fill all the fields')
                     }
                     else{
                         alert(callback)
