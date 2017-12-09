@@ -22,11 +22,11 @@ angular
             templateUrl: 'tpls/clientPage.html',
             controller: 'ClientPageCtrl'
             })
-            .when('/admin', {
+            .when('/admin-Login', {
                 templateUrl: 'tpls/adminLogin.html',
                 controller: 'AdminMainCtrl'
             })
-            .when('/adminPage', {
+            .when('/admin', {
                 templateUrl: 'tpls/adminPage.html',
                 controller: 'AdminCtrl'
             })

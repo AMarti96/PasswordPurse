@@ -15,7 +15,7 @@ var d=bigInt.zero;
 var e= bigInt(65537);
 var data =[];
 
-genNRSA=function () {
+function genNRSATTP() {
 
     var base=bigInt(2);
     var prime=false;
@@ -34,14 +34,12 @@ genNRSA=function () {
     n = p.multiply(q);
     d = e.modInv(phi);
 
-    console.log("RSA TTP Generated correctly")
-
-};
+}
 
 router.post('/repudiationThirdPart',function (req,res) {
 
     if(n===bigInt.zero){
-        this.genNRSA(function () {})
+        genNRSATTP(function () {})
     }
     else{
         nonRep.checkPayloadTTP(req.body.origin,req.body.destination,req.body.thirdpart,req.body.key,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
@@ -69,10 +67,9 @@ router.post('/repudiationThirdPart',function (req,res) {
 
 router.get('/generateTTP', function (req,res) {
     if(n===bigInt.zero){
-        this.genNRSA(function () {
-            res.send(1);
-
-        })
+        genNRSATTP();
+        console.log("RSA TTP Generated Correctly");
+        res.send("1");
     }
 });
 

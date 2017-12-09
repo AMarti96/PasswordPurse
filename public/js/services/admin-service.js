@@ -21,16 +21,14 @@
                 error(err.data)
             });
         };
-        this.getUsers=function (data,callback,error) {
+        this.getUsers=function (callback,error) {
 
             var req = {
-                method: 'POST',
+                method: 'GET',
                 url: '/adminServer/getusers',
-                headers: {'Content-Type': 'application/json'},
-                data: data
+                headers: {'Content-Type': 'application/json'}
 
             };
-
             $http(req).then(function (response) {
 
                 callback (response.data);

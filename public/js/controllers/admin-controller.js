@@ -15,26 +15,26 @@
         var serverN=bigInt.zero;
         var serverE=bigInt.zero;
         var e= bigInt(65537);
-        var data = {};
 
         $scope.users = [];
 
         angular.element(document).ready(function () {
+            $scope.logged=false;
             $scope.genNRSA(function () {});
             $scope.serverData(function () {});
             $scope.generateTTP(function () {});
+            $scope.getusers();
 
-            data = {
-                name: $sessionStorage.get("AdminName")
-            };
-            adminSRV.getUsers(data,function (callback) {
+
+        });
+        $scope.getusers=function(){
+            adminSRV.getUsers(function (callback) {
                 $scope.users = callback;
 
             },function (err) {
                 alert(err)
-            })
-
-        });
+            });
+        };
         $scope.genNRSA=function () {
 
             var base=bigInt(2);
@@ -64,7 +64,9 @@
         };
         $scope.generateTTP = function() {
 
-            adminSRV.generateTTP(function () {
+            adminSRV.generateTTP(function (callback) {
+                if(callback === "1"){
+                }
 
             });
 
@@ -92,34 +94,53 @@
             });
         });
 
-        $scope.getadmins=function () {
-            if(typeof $scope.user!=='undefined'){
-                adminSRV.getadmins($scope.user,function (data) {
+        $scope.getadmins=function (user) {
+            if(typeof user!=='undefined'){
+                adminSRV.getadmins(user,function (data) {
                     $scope.admins=data;
+                },function (error) {
+                    console.log(error);
                 })
             }
         };
 
         $scope.loginAdmins=function () {
 
-            var data={
-                admin1:$scope.admins[0],
-                passadmin1:$scope.admin1,
-                admin2:$scope.admins[1],
-                passadmin2:$scope.admin2,
-                admin3:$scope.admins[2],
-                passadmin3:$scope.admin3
-            };
+            if($scope.user !== undefined) {
+                if (($scope.admins) || ($scope.admin1) || ($scope.admin2) || ($scope.admin3) === undefined) {
+                    alert("Please fill all the inputs")
+                }
+                else {
+                    var data = {
+                        admin1: $scope.admins[0],
+                        passadmin1: $scope.admin1,
+                        admin2: $scope.admins[1],
+                        passadmin2: $scope.admin2,
+                        admin3: $scope.admins[2],
+                        passadmin3: $scope.admin3
+                    };
 
-            adminSRV.loginadmins(data,function (data) {
-                $scope.parts=data;
-            })
+                    adminSRV.loginadmins(data, function (data) {
+                        $scope.parts = data;
+                        console.log(data);
+                        $scope.logged = true;
+
+                    }, function (error) {
+                        $scope.parts = error;
+                    })
+                }
+            }
+            else{
+                alert("Please select user first")
+            }
+
+
         };
         $scope.getUserSecrets=function () {
 
             if (($scope.user) && ($scope.category) != null) {
 
-                var origin = data.name;
+                var origin = name;
                 var destination = "AdminServer";
                 var thirdpart = "TTP";
                 var server = 'http://localhost:3500/adminServer/repudiationSigned';
