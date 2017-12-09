@@ -1,6 +1,3 @@
-/**
- * Created by Lazarus of Bethany on 28/11/2017.
- */
 var express = require('express');
 var router = express.Router();
 var path = require('path');

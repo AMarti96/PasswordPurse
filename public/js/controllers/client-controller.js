@@ -1,6 +1,3 @@
-/**
- * Created by Lazarus of Bethany on 28/11/2017.
- */
 $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js", function(){
     particlesJS('particles-js',
         {

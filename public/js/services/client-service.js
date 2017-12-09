@@ -1,6 +1,3 @@
-/**
- * Created by Lazarus of Bethany on 28/11/2017.
- */
 (function() {
     'use strict';
     var app = angular.module('gitHubApp');

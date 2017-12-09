@@ -1,13 +1,12 @@
-/**
- * Created by Lazarus of Bethany on 25/10/2017.
- */
 (function() {
 'use strict';
 
 var app = angular.module('gitHubApp');
 app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$location','$sessionStorage', function (clientSRV, $rootScope, $window, $scope, $location, $sessionStorage) {
 
-    $rootScope.navbarActive = "home";
+    $scope.Saction=true;
+    $scope.Slog=false;
+    $scope.Ssign=false;
 
         var elements = $('.reveal');
         var win = $(window);
@@ -31,7 +30,19 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
             });
         });
 
+        $scope.Ssignup=function () {
+            $scope.Saction = false;
+            $scope.Slog = false;
+            $scope.Ssign = true;
 
+        };
+        $scope.Slogin=function () {
+
+            $scope.Saction = false;
+            $scope.Slog = true;
+            $scope.Ssign = false;
+
+        };
         $scope.signup=function () {
 
             var password=CryptoJS.RIPEMD160($scope.key).toString();

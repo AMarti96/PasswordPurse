@@ -1,6 +1,3 @@
-/**
- * Created by Lazarus of Bethany on 30/11/2017.
- */
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var admins = mongoose.Schema({

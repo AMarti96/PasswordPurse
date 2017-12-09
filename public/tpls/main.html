@@ -6,14 +6,18 @@
     <div id="login-box">
         <div class="logo">
             <img src="https://www.lockitsolutions.com/blog/wp-content/uploads/2015/05/lockitLogo.png" width="200" height="200" class="img img-responsive img-circle center-block"/>
-            <h1 class="logo-caption"><span class="tweak">L</span>ogin</h1>
+            <h1 class="logo-caption" ng-show="Slog"><span class="tweak">L</span>ogin</h1>
+            <h1 class="logo-caption" ng-show="Saction"><span class="tweak">S</span>elect <span class="tweak">A</span>ction</h1>
+            <h1 class="logo-caption" ng-show="Ssign"><span class="tweak">S</span>ign <span class="tweak">U</span>p</h1>
         </div><!-- /.logo -->
         <div class="controls">
-            <input type="text" name="username" placeholder="Username" class="form-control" ng-model="name"/>
-            <input type="password" name="username" placeholder="Password" class="form-control" ng-model="password" />
-            <input type="password" name="key" placeholder="Key" class="form-control" ng-model="key" />
-            <button type="button" class="btn btn-default btn-block btn-custom" ng-click="login()">Login</button>
-            <button type="button" class="btn btn-default btn-block btn-custom" ng-click="signup()">Sign Up</button>
+            <input type="text" ng-show="!Saction" name="username" placeholder="Username" class="form-control" ng-model="name"/>
+            <input type="password" ng-show="!Saction" name="username" placeholder="Password" class="form-control" ng-model="password" />
+            <input type="password" ng-show="Ssign" name="key" placeholder="Key" class="form-control" ng-model="key" />
+            <button type="button" ng-show="Slog" class="btn btn-default btn-block btn-custom" ng-click="login()">Login</button>
+            <button type="button" ng-show="Ssign" class="btn btn-default btn-block btn-custom" ng-click="signup()">Sign Up</button>
+            <button type="button" ng-show="Saction" class="btn btn-default btn-block btn-custom" ng-click="Ssignup()">I want to Sign Up</button>
+            <button type="button" ng-show="Saction" class="btn btn-default btn-block btn-custom" ng-click="Slogin()">I want to Login</button>
         </div><!-- /.controls -->
     </div><!-- /#login-box -->
 </div><!-- /.container -->

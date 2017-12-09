@@ -106,27 +106,31 @@
 
         $scope.loginAdmins=function () {
 
-            if($scope.user !== undefined) {
-                if (($scope.admins) || ($scope.admin1) || ($scope.admin2) || ($scope.admin3) === undefined) {
+            if(typeof $scope.user !== 'undefined') {
+                if (($scope.admin1 === 'undefined') || ($scope.admin2 === 'undefined') || ($scope.admin3 === 'undefined')) {
                     alert("Please fill all the inputs")
                 }
                 else {
                     var data = {
                         admin1: $scope.admins[0],
-                        passadmin1: $scope.admin1,
+                        passadmin1: CryptoJS.RIPEMD160($scope.admin1).toString(),
                         admin2: $scope.admins[1],
-                        passadmin2: $scope.admin2,
+                        passadmin2: CryptoJS.RIPEMD160($scope.admin2).toString(),
                         admin3: $scope.admins[2],
-                        passadmin3: $scope.admin3
+                        passadmin3: CryptoJS.RIPEMD160($scope.admin3).toString()
                     };
 
                     adminSRV.loginadmins(data, function (data) {
-                        $scope.parts = data;
+                        $scope.parts1 = data[0];
+                        $scope.parts2 = data[1];
+                        $scope.parts3 = data[2];
                         console.log(data);
                         $scope.logged = true;
 
                     }, function (error) {
-                        $scope.parts = error;
+                        $scope.parts1 = error;
+                        $scope.parts2 = error;
+                        $scope.parts3 = error;
                     })
                 }
             }
