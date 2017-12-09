@@ -32,7 +32,6 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
 
         $scope.Ssignup=function () {
             $scope.Saction = false;
-            $scope.Slog = false;
             $scope.Ssign = true;
 
         };
@@ -40,7 +39,6 @@ app.controller('MainCtrl',['clientSRV','$rootScope','$window','$scope','$locatio
 
             $scope.Saction = false;
             $scope.Slog = true;
-            $scope.Ssign = false;
 
         };
         $scope.signup=function () {
