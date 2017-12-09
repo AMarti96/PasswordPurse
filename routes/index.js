@@ -9,7 +9,6 @@ var session = require('express-session');
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(cors());
-
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin",  "*");
     res.header('Access-Control-Allow-Methods', "GET,PUT,POST,DELETE,OPTIONS");
@@ -17,6 +16,14 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Credentials',"true");
     next();
 });
+var https = require('https');
+var fs = require('fs');
+var options = {
+    key: fs.readFileSync('./certs/localhost.key'),
+    cert: fs.readFileSync('./certs/localhost.cert'),
+    requestCert: false,
+    rejectUnauthorized: false
+};
 var router = express.Router();
 var path = require('path');
 
@@ -42,7 +49,10 @@ app.use("/ttp",TTPServer);
 
 module.exports=app;
 
-app.listen(3500, function () {
-    console.log('App listening on port 3500!!')
+/*app.listen(3501, function () {
+    console.log('App listening on port 3501!!')
+});*/
+var server = https.createServer(options, app).listen(3500, function(){
+    console.log("Secure server started at port 3500!!");
 });
 
