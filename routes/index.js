@@ -49,9 +49,9 @@ app.use("/ttp",TTPServer);
 
 module.exports=app;
 
-/*app.listen(3501, function () {
+app.listen(3501, function () {
     console.log('App listening on port 3501!!')
-});*/
+});
 var server = https.createServer(options, app).listen(3500, function(){
     console.log("Secure server started at port 3500!!");
 });

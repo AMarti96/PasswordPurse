@@ -108,7 +108,7 @@
 
             if(typeof $scope.user !== 'undefined') {
                 if (($scope.admin1 === 'undefined') || ($scope.admin2 === 'undefined') || ($scope.admin3 === 'undefined')) {
-                    alert("Please fill all the inputs")
+                    alert("Please fill all the fields")
                 }
                 else {
                     var data = {
@@ -142,7 +142,7 @@
         };
         $scope.getUserSecrets=function () {
 
-            if (($scope.user) && ($scope.category) != null) {
+            if (($scope.user !== 'undefined') && ($scope.category !== 'undefined')) {
 
                 var origin = name;
                 var destination = "AdminServer";

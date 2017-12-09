@@ -178,7 +178,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
 
         $scope.newSecret=function () {
 
-            if(typeof $scope.category!=='undefined'&&typeof $scope.secret!=='undefined')
+            if(typeof $scope.category!=='undefined'&&typeof $scope.secret!=='undefined'&&typeof $scope.key!=='undefined')
             {
                 var category="";
                 if($scope.category!="Other"){
@@ -227,7 +227,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
             console.log(secrets.hex2str(combine))
             console.log(password)*/
 
-            if(typeof $scope.category!=='undefined'){
+            if(typeof $scope.category!=='undefined'&&typeof $scope.key!=='undefined'){
                 var data={
                     category: $scope.category,
                     token:$sessionStorage.get("token")
