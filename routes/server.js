@@ -185,7 +185,7 @@ router.post('/usersecrets',function (req,res) {
     }
     else{
         console.log("Server: Message from "+ req.body.origin);
-       // console.log(req.body);
+       console.log(req.body.origin);
         nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
 
             if(buff === 1){
@@ -237,16 +237,33 @@ router.post('/keyReady',function (req,res) {
 
                 if(user){
 
-                    Secret.find({user:user._id,category:category},function (err,user) {
-                        
-                    })
+                    Secret.find({user:user._id,category:category},function (err,secret) {
 
+                        var message;
+                        var j = 0;
+                        secret.forEach(function (sec) {
+                            sec.secrets.forEach(function (element) {
+                                if (j===0){
+                                    j++;
+                                    message = element+".";
+                                }
+                                else {
+                                    message = message + element + ".";
+                                }
+                            });
+                            j=0;
+                        });
+
+                        res.send(message);
+
+                    });
+
+                }
+                else{
+                    res.send("0");
                 }
 
             });
-
-
-            res.send("1");
         }
         else{
             res.send("0");
@@ -268,6 +285,9 @@ router.get('/getServer', function (req,res) {
 });
 router.get('/admincategory/:client', function (req,res) {
 
+    var categoryList = [];
+
+
     User.findOne({name:req.params.client},function(err,user){
 
         if(user){
@@ -281,7 +301,7 @@ router.get('/admincategory/:client', function (req,res) {
                     response.forEach(function (element) {
                         categoryList.push(element.category)
                     });
-
+                    console.log(categoryList);
                     res.send(categoryList)
                 }
             })

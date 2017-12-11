@@ -133,6 +133,9 @@ router.post('/keyReady',function (req,res) {
          var admin3 = parts[4].split("-")[0];
          var parts3 = parts[4].split("-")[1];
 
+         var combine=secrets.combine([parts1,parts2,parts3])
+         var pass = secrets.hex2str(combine);
+
          var newmessage = user+"."+category;
          var origin="AdminServer";
          var destination="Server";
@@ -160,6 +163,7 @@ router.post('/keyReady',function (req,res) {
 
                                      var data = {
                                          AdminName:origin,
+                                         DestinationName:destination,
                                          url2:'http://localhost:3501/ttp/getAdminKey'
                                      };
                                      var dat = {
@@ -175,7 +179,13 @@ router.post('/keyReady',function (req,res) {
 
                                      };
                                      request(req, function (error, response, body){
-                                         console.log(response.body);
+
+                                         var parts = response.body.split(".");
+                                         var text = " ";
+                                         for(var i=0;i<parts.length-1;i++) {
+                                             text=text+ convertFromHex(CryptoJS.AES.decrypt(parts[i], pass).toString())+', '
+                                         }
+                                         res.send(text);
                                      });
 
                                  }
@@ -196,7 +206,7 @@ router.post('/keyReady',function (req,res) {
 
 
          });
-         res.send("1");
+
      }
      else{
          res.send(buff);
@@ -219,6 +229,7 @@ router.post('/repudiationSigned',function (req,res) {
     }
     else{
         console.log("Admin Server: Message from "+ req.body.origin);
+        console.log(req.body.origin);
 
         nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
 
@@ -236,7 +247,7 @@ router.post('/repudiationSigned',function (req,res) {
                 });
             }
             else {
-                console.log("Algo paso");
+                console.log("Payload not equal");
                 res.send("ERROR")
             }
         });
@@ -308,7 +319,7 @@ router.post('/loginadmins',function (req, res) {
             });
             Admin.findOne({name:req.body.admin2,password:req.body.passadmin2},function (err, admin2) {
                 if(admin2){
-                    admin1.userParts.forEach(function (element) {
+                    admin2.userParts.forEach(function (element) {
                         var value=JSON.parse(element);
                         if(value.userid==user){
                             parts.push(value.part)
@@ -316,7 +327,7 @@ router.post('/loginadmins',function (req, res) {
                     });
                     Admin.findOne({name:req.body.admin3,password:req.body.passadmin3},function (err, admin3) {
                         if(admin3){
-                            admin1.userParts.forEach(function (element) {
+                            admin3.userParts.forEach(function (element) {
                                 var value=JSON.parse(element);
                                 if(value.userid==user){
                                     parts.push(value.part)
@@ -349,5 +360,13 @@ router.get('/categories/:client',function (req,res) {
 router.get('*', function(req, res){
     res.sendFile(path.join(__dirname, '../public/tpls/', 'error.html'));
 });
+
+function convertFromHex(hex) {
+    var hex2 = hex.toString();
+    var str = '';
+    for (var i = 0; i < hex2.length; i += 2){
+        str += String.fromCharCode(parseInt(hex2.substr(i, 2), 16))
+    }
+    return str; }
 
 module.exports = router;

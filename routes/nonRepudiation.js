@@ -13,13 +13,18 @@ module.exports = {
         /////////
         var sigmessage=bigInt(signature);
         var signature2=sigmessage.modPow(publicE,modulus2);
-        buffS=Buffer.from(signature2.toString(16),'hex').toString();
-        //////////
-        var string=origin+"."+destination+"."+message;
-        var hash=HashJS(string);
+        if(signature) {
+            buffS = Buffer.from(signature2.toString(16), 'hex').toString();
+            //////////
+            var string = origin + "." + destination + "." + message;
+            var hash = HashJS(string);
 
-        if(hash==buffS) {
-            callback(1);
+            if (hash == buffS) {
+                callback(1);
+            }
+            else {
+                callback(0);
+            }
         }
         else{
             callback(0);
@@ -100,7 +105,7 @@ module.exports = {
     },
     consultTTP: function (data,callback) {
 
-        var url = data.url2+'/'+data.AdminName;
+        var url = data.url2+'/'+data.AdminName+'/'+data.DestinationName;
 
         request(url, function (error, response, body) {
 

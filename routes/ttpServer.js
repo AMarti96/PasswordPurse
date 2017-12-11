@@ -54,7 +54,6 @@ router.post('/repudiationThirdPart',function (req,res) {
                         sharedKey: buff2.key
                     };
                     data.push(dat);
-                    //console.log(data)
                     res.send(dat.data);
                 });
             }
@@ -65,9 +64,10 @@ router.post('/repudiationThirdPart',function (req,res) {
     }
 });
 
-router.get('/getAdminKey/:origin',function (req,res) {
+router.get('/getAdminKey/:origin/:destination',function (req,res) {
 
-    console.log("TTP: Returning key from: "+req.params.origin);
+    var date = new Date(Date.now());
+    console.log("TTP: Returning key from "+req.params.origin+" to server "+req.params.destination+" in "+ date.toString());
 
     var origin = req.params.origin;
 

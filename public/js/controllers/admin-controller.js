@@ -165,7 +165,7 @@
                 var admin1 = $scope.admins[0] + "-" + $scope.part1;
                 var admin2 = $scope.admins[1] + "-" + $scope.part2;
                 var admin3 = $scope.admins[2] + "-" + $scope.part3;
-                var message = $scope.user + "." + $scope.category + "." + admin1 + "." + admin2 + "." + admin3;
+                var message = $scope.user.name + "." + $scope.category + "." + admin1 + "." + admin2 + "." + admin3;
 
                 nonRepMOD.sendMessageToAdminSever(origin, destination, server, sharedKey, d, n, e, message, function (buff) {
 
@@ -190,6 +190,7 @@
 
                                             var data = {
                                                 AdminName:origin,
+                                                DestinationName:destination,
                                                 url2:'http://localhost:3501/ttp/getAdminKey'
                                             };
                                             var dat = {
@@ -199,8 +200,11 @@
 
                                             adminSRV.notifyAdminServer(dat,function (callback) {
 
-                                                console.log(callback);
+                                                var secrets = callback.split(",");
 
+                                                var popped = secrets.pop();
+
+                                                console.log("Passwords from "+  $scope.user.name +" are: "+secrets);
 
                                             },function (error) {
                                                 alert(error);
