@@ -220,6 +220,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
         };
 
         $scope.getSecrets=function () {
+
             /*var password=CryptoJS.RIPEMD160($scope.key).toString();
             var passHex=secrets.str2hex(password);
             var shares=secrets.share(passHex,3,3,512);
@@ -228,6 +229,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles
             console.log(password)*/
 
             if(typeof $scope.category!=='undefined'&&typeof $scope.key!=='undefined'){
+
                 var data={
                     category: $scope.category,
                     token:$sessionStorage.get("token")

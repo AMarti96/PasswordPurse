@@ -72,6 +72,20 @@
             });
         };
 
+        this.notifyAdminServer=function (data,callback,error) {
+            var req = {
+                method: 'POST',
+                url: data.url,
+                headers: {'Content-Type': 'application/json'},
+                data: data.data
+            };
+            $http(req).then(function (response) {
+                callback(response.data);
+            }).catch(function (err) {
+                error(err.data);
+            });
+        };
+
         this.getadmins=function (data,callback,error) {
             var req = {
                 method: 'GET',

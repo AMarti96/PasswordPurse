@@ -19,7 +19,7 @@
             return str; }
 
 
-        this.sendMessageToAdminSever = function (origin, destination, thidpart, server, sharedKey,d,n,e, message, callback) {
+        this.sendMessageToAdminSever = function (origin, destination, server, sharedKey,d,n,e, message, callback) {
 
             var cypher= CryptoJS.AES.encrypt(message,sharedKey).toString();
             var string=origin+"."+destination+"."+cypher;
@@ -36,11 +36,9 @@
                 publicE:e
             };
 
-            var url = server;
-
             var req = {
                 method: 'POST',
-                url: url,
+                url: server,
                 headers: {'Content-Type': 'application/json'},
                 data: data
 
@@ -110,11 +108,9 @@
                 publicE:e
             };
 
-            var url = ttp;
-
             var req = {
                 method: 'POST',
-                url: url,
+                url: ttp,
                 headers: {'Content-Type': 'application/json'},
                 data: data
 

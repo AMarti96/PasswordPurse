@@ -64,6 +64,25 @@ router.post('/repudiationThirdPart',function (req,res) {
     }
 });
 
+router.get('/getAdminKey/:origin',function (req,res) {
+
+    console.log("TTP: Returning key from: "+req.params.origin);
+
+    var origin = req.params.origin;
+
+    data.forEach(function (element) {
+
+        if(element.name === origin){
+            var dat = element;
+            data = data.filter(function(el) {
+                return el.name !== origin;
+            });
+            res.send(dat);
+        }
+    });
+
+});
+
 
 router.get('/generateTTP', function (req,res) {
     if(n===bigInt.zero){

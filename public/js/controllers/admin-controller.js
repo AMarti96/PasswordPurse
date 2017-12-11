@@ -6,7 +6,6 @@
 
         $rootScope.navbarActive = "home";
 
-        $scope.Adminname = $sessionStorage.get("AdminName");
         var p=bigInt.zero;
         var q=bigInt.zero;
         var n=bigInt.zero;
@@ -21,7 +20,7 @@
         angular.element(document).ready(function () {
             $scope.logged=false;
             $scope.genNRSA(function () {});
-            $scope.serverData(function () {});
+            $scope.adminServerData(function () {});
             $scope.generateTTP(function () {});
             $scope.getusers();
 
@@ -54,7 +53,7 @@
             n = p.multiply(q);
             d = e.modInv(phi);
         };
-        $scope.serverData = function() {
+        $scope.adminServerData = function() {
 
             adminSRV.getAdminServer(function (data) {
                 serverN= data.modulus;
@@ -107,6 +106,7 @@
         $scope.loginAdmins=function () {
 
             if(typeof $scope.user !== 'undefined') {
+
                 if (($scope.admin1 === 'undefined') || ($scope.admin2 === 'undefined') || ($scope.admin3 === 'undefined')) {
                     alert("Please fill all the fields")
                 }
@@ -124,7 +124,6 @@
                         $scope.parts1 = data[0];
                         $scope.parts2 = data[1];
                         $scope.parts3 = data[2];
-                        console.log(data);
                         $scope.logged = true;
 
                     }, function (error) {
@@ -142,35 +141,60 @@
         };
         $scope.getUserSecrets=function () {
 
-            if (($scope.user !== 'undefined') && ($scope.category !== 'undefined')) {
+            if (($scope.user === 'undefined') || ($scope.category === undefined) || ($scope.part1 === undefined) || ($scope.part2 === undefined) || ($scope.part3 === undefined)) {
+                alert("Please fill all the fields")
+            }
+            else {
 
-                var origin = name;
+
+                var origin = $scope.admins[0]+"."+$scope.admins[1]+"."+$scope.admins[2];
                 var destination = "AdminServer";
                 var thirdpart = "TTP";
-                var server = 'http://localhost:3500/adminServer/repudiationSigned';
-                var sharedKey = "Masmiwapo";
-                var message = $scope.user+"."+$scope.category;
+                var server = 'http://localhost:3501/adminServer/repudiationSigned';
+                var sharedKey = "Tardis";
+                var admin1 = $scope.admins[0] + "-" + $scope.part1;
+                var admin2 = $scope.admins[1] + "-" + $scope.part2;
+                var admin3 = $scope.admins[2] + "-" + $scope.part3;
+                var message = $scope.user + "." + $scope.category + "." + admin1 + "." + admin2 + "." + admin3;
 
-                console.log(message);
-                nonRepMOD.sendMessageToAdminSever(origin, destination,thirdpart,server,sharedKey,d,n,e,message,function (buff) {
+                nonRepMOD.sendMessageToAdminSever(origin, destination, server, sharedKey, d, n, e, message, function (buff) {
 
                     if (buff.origin === undefined) {
-                        console.log("Error when sending message to admin")
+                        console.log("Error when sending message to admin server")
                     }
                     else {
                         nonRepMOD.checkPayload(buff.origin, buff.destination, buff.message, serverE, serverN, buff.signature, function (res) {
 
                             if (res === 1) {
 
-                                var ttp = 'http://localhost:3500/ttp/repudiationThirdPart';
+                                var ttp = 'http://localhost:3501/ttp/repudiationThirdPart';
                                 console.log("Sharing key with ttp");
+
                                 nonRepMOD.sendMessageToThirdPart(origin, destination, sharedKey, thirdpart, d, n, e, ttp, function (buff2) {
 
                                     nonRepMOD.checkPayloadTTP(buff2.origin, buff2.destination, buff2.key, buff2.TTPE, buff2.modulusTTP, buff2.thirdpart, buff2.signature, function (res2) {
 
                                         if (res2 === 1) {
-                                            console.log("The shared key is: " + sharedKey);
-                                            console.log("The message is: " + message);
+
+                                            var notif = 'http://localhost:3501/adminServer/keyReady';
+
+                                            var data = {
+                                                AdminName:origin,
+                                                url2:'http://localhost:3501/ttp/getAdminKey'
+                                            };
+                                            var dat = {
+                                                url:notif,
+                                                data:data
+                                            };
+
+                                            adminSRV.notifyAdminServer(dat,function (callback) {
+
+                                                console.log(callback);
+
+
+                                            },function (error) {
+                                                alert(error);
+                                            });
                                         }
 
                                         else {

@@ -4,6 +4,36 @@ var HashJS= require('crypto-js/sha1');
 var path = require('path');
 var User = require('../models/users');
 var Secret = require('../models/secrets');
+var bigInt = require("big-integer");
+var CryptoJS = require("crypto-js");
+var nonRep = require('../../PasswordPurse/routes/nonRepudiation');
+var p=bigInt.zero;
+var q=bigInt.zero;
+var n=bigInt.zero;
+var d=bigInt.zero;
+var e= bigInt(65537);
+var cryptograms=[];
+
+function genNRSA(){
+
+    var base=bigInt(2);
+    var prime=false;
+
+    while (!prime) {
+        p = bigInt.randBetween(base.pow(255), base.pow(256).subtract(1));
+        prime = bigInt(p).isPrime()
+
+    }
+    prime = false;
+    while (!prime) {
+        q = bigInt.randBetween(base.pow(255), base.pow(256).subtract(1));
+        prime = bigInt(q).isPrime()
+    }
+    var phi = p.subtract(1).multiply(q.subtract(1));
+    n = p.multiply(q);
+    d = e.modInv(phi);
+
+};
 
 router.get('/categories/:client',function (req,res) {
 
@@ -143,6 +173,79 @@ router.post('/getsecrets',function (req,res) {
      res.status(401).send("Token Error, Wrong Credentials")
      }
      });
+
+});
+
+router.post('/usersecrets',function (req,res) {
+
+
+    if(n==bigInt.zero){
+        genNRSA(function () {})
+    }
+    else{
+        console.log("Server: Message from "+ req.body.origin);
+
+        console.log(req.body);
+
+        nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
+
+            if(buff === 1){
+
+                nonRep.returnMessagefromServer(req.body.origin,req.body.destination,req.body.message,d,n,function (data) {
+
+                    var dat = {
+                        origin:req.body.origin,
+                        cryptogram:req.body.message
+                    };
+                    cryptograms.push(dat);
+
+                    res.send(data)
+                });
+            }
+            else {
+                console.log("Algo paso");
+                res.send("ERROR")
+            }
+        });
+    }
+});
+
+router.post('/keyReady',function (req,res) {
+
+    nonRep.consultTTP(req.body,function (buff) {
+
+        if(buff!=0) {
+
+            console.log("Server: The shared key is: " + buff);
+            var message;
+            cryptograms.forEach(function (element) {
+
+                if (element.origin === req.body.AdminName) {
+                    cryptograms = cryptograms.filter(function (el) {
+                        return el.origin !== req.body.AdminName;
+                    });
+                    message = CryptoJS.AES.decrypt(element.cryptogram, buff).toString(CryptoJS.enc.Utf8);
+                    console.log("Server: The message is: " + message);
+                }
+            });
+            res.send("1");
+        }
+        else{
+            res.send(buff);
+        }
+    })
+});
+
+router.get('/getServer', function (req,res) {
+    if(n===bigInt.zero){
+        genNRSA();
+        console.log("RSA Server Generated Correctly");
+    }
+    var data={
+        Smodulus:n,
+        ServerE:e
+    };
+    res.send(data)
 
 });
 

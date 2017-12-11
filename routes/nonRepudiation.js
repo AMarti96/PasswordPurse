@@ -60,7 +60,7 @@ module.exports = {
             modulusTTP:n,
             TTPE:e
         };
-        console.log("Hang key "+sharedkey);
+        console.log("TTP: Hang key "+sharedkey);
         callback(data);
 
     },
@@ -80,17 +80,16 @@ module.exports = {
         };
         callback(data);
     },
-    consultTTP: function (ttpURL) {
+    consultTTP: function (data,callback) {
 
-        console.log("He conseguido K?");
-
-        var url = ttpURL+'/getKey';
+        var url = data.url2+'/'+data.AdminName;
 
         request(url, function (error, response, body) {
 
             if(body!=0) {
 
-                var datos = JSON.parse(response.body);
+                var dat = JSON.parse(response.body);
+                var datos = dat.data;
                 var buffS;
                 /////////
                 var thirdpart = datos.thirdpart;
@@ -109,15 +108,76 @@ module.exports = {
 
                 if (hash == buffS) {
 
-                    console.log("La clave compartida es: " + sharedKey);
-                    var message = CryptoJS.AES.decrypt(criptogram, sharedKey).toString(CryptoJS.enc.Utf8);
-                    console.log("El mensaje es: " + message);
+                    callback(sharedKey)
 
                 }
                 else {
                     console.log("error");
+                    callback("0");
                 }
             }
+            else{
+                console.log("error2");
+                callback("0");
+            }
+        });
+    },
+    sendMessageToSever:function (origin, destination, server, sharedKey,d,n,e, message, callback) {
+
+        var cypher = CryptoJS.AES.encrypt(message, sharedKey).toString();
+        var string = origin + "." + destination + "." + cypher;
+        var hash = CryptoJS.SHA256(string).toString();
+        var signature = convertToHex(hash);
+        var messageS = bigInt(signature, 16);
+        var sigmessage = messageS.modPow(d, n);
+        var data = {
+            origin: origin,
+            destination: destination,
+            message: cypher,
+            signature: sigmessage,
+            modulus: n,
+            publicE: e
+        };
+
+        var req = {
+            url: server,
+            method: 'POST',
+            json:true,
+            body: data
+
+        };
+        request(req, function (error, response, body){
+            callback(response.body);
+        });
+
+    },
+    sendMessageToThirdPart : function (origin, destination, sharedKey, thirdpart, d, n, e, ttp, callback) {
+
+        var string = origin + "." + thirdpart + "." + destination + "." + sharedKey;
+        var hash = CryptoJS.SHA256(string).toString();
+        var signature = convertToHex(hash);
+        var messageS = bigInt(signature, 16);
+        var sigmessage = messageS.modPow(d, n);
+
+        var data = {
+            origin: origin,
+            thirdpart: thirdpart,
+            destination: destination,
+            key: sharedKey,
+            signature: sigmessage,
+            modulus: n,
+            publicE: e
+        };
+
+        var req = {
+            url: ttp,
+            method: 'POST',
+            json:true,
+            body: data
+
+        };
+        request(req, function (error, response,body){
+            callback(response.body);
         });
     }
 };
@@ -127,4 +187,19 @@ var noExpuesta = function () {
     /*
     HERE YOU CAN DO WHAT YOU WANT THAT ONLY THE FUNCTIONS INSIDE THE JS CAN ACCESS THEM
      */
-}
+};
+
+function convertToHex(str) {
+    var hex = '';
+    for(var i=0;i<str.length;i++) {
+        hex += ''+str.charCodeAt(i).toString(16);
+    }
+    return hex; }
+
+function convertFromHex(hex) {
+    var hex2 = hex.toString();
+    var str = '';
+    for (var i = 0; i < hex2.length; i += 2){
+        str += String.fromCharCode(parseInt(hex2.substr(i, 2), 16))
+    }
+    return str; }
