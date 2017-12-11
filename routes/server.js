@@ -6,6 +6,7 @@ var User = require('../models/users');
 var Secret = require('../models/secrets');
 var bigInt = require("big-integer");
 var CryptoJS = require("crypto-js");
+var Admin= require('../models/admins');
 var nonRep = require('../../PasswordPurse/routes/nonRepudiation');
 var p=bigInt.zero;
 var q=bigInt.zero;
@@ -184,9 +185,7 @@ router.post('/usersecrets',function (req,res) {
     }
     else{
         console.log("Server: Message from "+ req.body.origin);
-
-        console.log(req.body);
-
+       // console.log(req.body);
         nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
 
             if(buff === 1){
@@ -227,11 +226,30 @@ router.post('/keyReady',function (req,res) {
                     message = CryptoJS.AES.decrypt(element.cryptogram, buff).toString(CryptoJS.enc.Utf8);
                     console.log("Server: The message is: " + message);
                 }
+
             });
+
+            var parts = message.split(".");
+            var us = parts[0];
+            var category = parts[1];
+
+            User.findOne({name:us},function(err,user) {
+
+                if(user){
+
+                    Secret.find({user:user._id,category:category},function (err,user) {
+                        
+                    })
+
+                }
+
+            });
+
+
             res.send("1");
         }
         else{
-            res.send(buff);
+            res.send("0");
         }
     })
 });

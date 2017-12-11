@@ -44,6 +44,25 @@ module.exports = {
             callback(0);
         }
     },
+    checkPayloadFromTTP: function (origin,destination,thirdpart,sharedkey,modulus,publicE,signature,callback) {
+
+        var buffS;
+        /////////
+        var modulus2= bigInt(modulus);
+        /////////
+        var sigmessage=bigInt(signature);
+        var signature2=sigmessage.modPow(publicE,modulus2);
+        buffS=Buffer.from(signature2.toString(16),'hex').toString();
+        //////////
+        var string=thirdpart+"."+origin+"."+destination+"."+sharedkey;
+        var hash=HashJS(string);
+        if(hash==buffS) {
+            callback(1);
+        }
+        else{
+            callback(0);
+        }
+    },
     shareKey: function (origin,destination,thirdpart,d,n,e,sharedkey,callback) {
 
         var string=thirdpart+"."+origin+"."+destination+"."+sharedkey;
@@ -60,7 +79,6 @@ module.exports = {
             modulusTTP:n,
             TTPE:e
         };
-        console.log("TTP: Hang key "+sharedkey);
         callback(data);
 
     },

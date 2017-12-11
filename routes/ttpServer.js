@@ -47,13 +47,14 @@ router.post('/repudiationThirdPart',function (req,res) {
             if (buff === 1){
 
                 nonRep.shareKey(req.body.origin,req.body.destination,req.body.thirdpart,d,n,e,req.body.key,function (buff2) {
-
+                    console.log("TTP: Hang key "+buff2.key);
                     var dat = {
                         name: req.body.origin,
                         data: buff2,
                         sharedKey: buff2.key
                     };
                     data.push(dat);
+                    //console.log(data)
                     res.send(dat.data);
                 });
             }

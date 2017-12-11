@@ -150,37 +150,38 @@ router.post('/keyReady',function (req,res) {
                      if (re === 1) {
 
                          var ttp = 'http://localhost:3501/ttp/repudiationThirdPart';
-                         console.log("Sharing key with ttp");
+                         console.log("Admin Server: Sharing key with ttp");
 
                          nonRep.sendMessageToThirdPart(origin, destination, sharedKey, thirdpart, d, n, e, ttp, function (buff2) {
 
-                             nonRep.checkPayloadTTP(buff2.origin, buff2.destination, buff2.key, buff2.TTPE, buff2.modulusTTP, buff2.thirdpart, buff2.signature, function (res2) {
+                             nonRep.checkPayloadFromTTP(buff2.origin, buff2.destination,buff2.thirdpart,buff2.key,buff2.modulusTTP, buff2.TTPE, buff2.signature, function (res2) {
 
                                  if (res2 === 1) {
-
-                                     var notif = 'http://localhost:3501/server/keyReady';
 
                                      var data = {
                                          AdminName:origin,
                                          url2:'http://localhost:3501/ttp/getAdminKey'
                                      };
                                      var dat = {
-                                         url:notif,
+                                         url:'http://localhost:3501/server/keyReady',
                                          data:data
                                      };
 
-                                     adminSRV.notifyAdminServer(dat,function (callback) {
+                                     var req = {
+                                         url: dat.url,
+                                         method: 'POST',
+                                         json:true,
+                                         body: dat.data
 
-                                         console.log(callback);
-
-
-                                     },function (error) {
-                                         alert(error);
+                                     };
+                                     request(req, function (error, response, body){
+                                         console.log(response.body);
                                      });
+
                                  }
 
                                  else {
-                                     $scope.results = "Error when checking payload"
+                                     console.log("Admin Server: Error when checking payload from TTP")
                                  }
 
                              });
@@ -188,18 +189,13 @@ router.post('/keyReady',function (req,res) {
                          });
                      }
                      else {
-                         $scope.results = "Something went wrong..."
+                         console.log("Admin Server: Something went wrong...")
                      }
                  });
              }
 
 
          });
-
-
-
-
-
          res.send("1");
      }
      else{

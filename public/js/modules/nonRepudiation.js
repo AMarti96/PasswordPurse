@@ -67,7 +67,7 @@
             }
         };
 
-        this.checkPayloadTTP = function (origin, destination, key, TTPE, modulusTTP, thirdpart, signature, callback) {
+        this.checkPayloadFromTTP = function (origin, destination, key, TTPE, modulusTTP, thirdpart, signature, callback) {
 
             var buffS;
             /////////
