@@ -38,7 +38,7 @@
     "angular-sessionstorage": "^1.1.5",
     "crypto-js": "^3.1.9",
     "secrets.js": "^0.1.18",
-    "bootswatch-dist": "^3.3.6+2-paper"
+    "bootswatch-dist": "3.3.6+2-paper"
   },
   "private": true,
   "ignore": [

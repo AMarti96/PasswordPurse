@@ -24,12 +24,10 @@
             $scope.generateTTP(function () {});
             $scope.getusers();
 
-
         });
         $scope.getusers=function(){
             adminSRV.getUsers(function (callback) {
                 $scope.users = callback;
-
             },function (err) {
                 alert(err)
             });
@@ -94,8 +92,10 @@
         });
 
         $scope.getadmins=function (user) {
+
             if(typeof user!=='undefined'){
-                adminSRV.getadmins(user,function (data) {
+                adminSRV.getadmins(user.name,function (data) {
+
                     $scope.admins=data;
                 },function (error) {
                     console.log(error);
@@ -104,7 +104,7 @@
         };
 
         $scope.loginAdmins=function () {
-
+            $scope.selecteduser=$scope.user;
             if(typeof $scope.user !== 'undefined') {
 
                 if (($scope.admin1 === 'undefined') || ($scope.admin2 === 'undefined') || ($scope.admin3 === 'undefined')) {
@@ -112,6 +112,7 @@
                 }
                 else {
                     var data = {
+                        user:$scope.user._id,
                         admin1: $scope.admins[0],
                         passadmin1: CryptoJS.RIPEMD160($scope.admin1).toString(),
                         admin2: $scope.admins[1],
@@ -125,6 +126,15 @@
                         $scope.parts2 = data[1];
                         $scope.parts3 = data[2];
                         $scope.logged = true;
+                        adminSRV.getcategories($scope.user.name,function (callback) {
+                            if (callback==='undefined'){
+                                alert('Error')
+                            }
+                            else{
+                                console.log(callback);
+                                $scope.categories=callback
+                            }
+                        })
 
                     }, function (error) {
                         $scope.parts1 = error;

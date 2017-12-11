@@ -85,7 +85,21 @@
                 error(err.data);
             });
         };
+        this.getcategories=function (client,callback) {
 
+            var req = {
+                method: 'GET',
+                url: '/adminServer/categories/'+client,
+                headers: {'Content-Type': 'application/json'}
+
+            };
+
+            $http(req).then(function (response) {
+
+                callback (response.data);
+
+            });
+        };
         this.getadmins=function (data,callback,error) {
             var req = {
                 method: 'GET',

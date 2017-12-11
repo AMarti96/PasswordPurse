@@ -94,7 +94,7 @@ router.get('/getusers',function (req,res) {
     var users = [];
     User.find().then(function (user) {
         user.forEach(function (element) {
-                users.push(element.name);
+                users.push(element);
 
         });
         res.send(users);
@@ -264,20 +264,26 @@ router.get('/getServer', function (req,res) {
 
 router.get('/getadmins/:user', function (req,res) {
     var adminlist=[];
+
     User.findOne({name:req.params.user},function (err, user) {
         if(user){
-            Admin.find().then(function (admins) {
+            Admin.find({}).then(function (admins) {
                 admins.forEach(function (element) {
                     if(element.userParts[0] === undefined){
 
                     }
                     else{
-                        var value = JSON.parse(element.userParts);
-                        if(value.userid==user._id){
-                            adminlist.push(element.name);
-                        }
+                        element.userParts.forEach(function (element2) {
+                            var value = JSON.parse(element2);
+
+                            if(value.userid==user._id){
+                                adminlist.push(element.name);
+                            }
+                        })
+
                     }
                 });
+
                 res.send(adminlist);
             })
 
@@ -288,16 +294,34 @@ router.get('/getadmins/:user', function (req,res) {
     })
 });
 router.post('/loginadmins',function (req, res) {
+    var user=req.body.user;
    var parts=[];
     Admin.findOne({name:req.body.admin1,password:req.body.passadmin1},function (err, admin1) {
         if(admin1){
-            parts.push(JSON.parse(admin1.userParts).part);
+
+            admin1.userParts.forEach(function (element) {
+                var value=JSON.parse(element);
+                if(value.userid==user){
+                    parts.push(value.part)
+                }
+
+            });
             Admin.findOne({name:req.body.admin2,password:req.body.passadmin2},function (err, admin2) {
                 if(admin2){
-                    parts.push(JSON.parse(admin2.userParts).part);
+                    admin1.userParts.forEach(function (element) {
+                        var value=JSON.parse(element);
+                        if(value.userid==user){
+                            parts.push(value.part)
+                        }
+                    });
                     Admin.findOne({name:req.body.admin3,password:req.body.passadmin3},function (err, admin3) {
                         if(admin3){
-                            parts.push(JSON.parse(admin3.userParts).part);
+                            admin1.userParts.forEach(function (element) {
+                                var value=JSON.parse(element);
+                                if(value.userid==user){
+                                    parts.push(value.part)
+                                }
+                            });
                             res.send(parts);
                         }
                         else{
@@ -315,7 +339,13 @@ router.post('/loginadmins',function (req, res) {
         }
     });
 });
+router.get('/categories/:client',function (req,res) {
 
+    request('http://localhost:3501/server/admincategory/'+req.params.client, function (error, response, body) {
+        res.send(response.body)
+    });
+
+});
 router.get('*', function(req, res){
     res.sendFile(path.join(__dirname, '../public/tpls/', 'error.html'));
 });

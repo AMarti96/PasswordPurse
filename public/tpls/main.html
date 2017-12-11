@@ -14,10 +14,15 @@
             <input type="text" ng-show="!Saction" name="username" placeholder="Username" class="form-control" ng-model="name"/>
             <input type="password" ng-show="!Saction" name="username" placeholder="Password" class="form-control" ng-model="password" />
             <input type="password" ng-show="Ssign" name="key" placeholder="Key" class="form-control" ng-model="key" />
-            <button type="button" ng-show="Slog" class="btn btn-default btn-block btn-custom" ng-click="login()">Login</button>
-            <button type="button" ng-show="Ssign" class="btn btn-default btn-block btn-custom" ng-click="signup()">Sign Up</button>
-            <button type="button" ng-show="Saction" class="btn btn-default btn-block btn-custom" ng-click="Ssignup()">I want to Sign Up</button>
-            <button type="button" ng-show="Saction" class="btn btn-default btn-block btn-custom" ng-click="Slogin()">I want to Login</button>
+            <button type="button" ng-if="Slog" class="btn btn-default btn-block btn-custom" ng-click="login()">Login</button>
+            <button type="button" ng-if="Ssign" class="btn btn-default btn-block btn-custom" ng-click="signup()">Sign Up</button>
+            <div ng-if="Saction">
+            <button type="button" class="btn btn-default btn-block btn-custom" ng-click="Ssignup()">I want to Sign Up</button>
+            </div>
+            <div ng-if="Saction">
+                <button type="button" class="btn btn-default btn-block btn-custom" ng-click="Slogin()">I want to Login</button>
+            </div>
+
         </div><!-- /.controls -->
     </div><!-- /#login-box -->
 </div><!-- /.container -->

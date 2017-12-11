@@ -12,18 +12,18 @@
 
                 <div class="form-group" ng-show="!logged">
                     <label style="color: white">User:</label>
-                    <select ng-model="user" placeholder="Your categories" style="width:100px" ng-click="getadmins(user)">
-                        <option ng-repeat="user in users">{{user}}</option>
+                    <select ng-model="user" placeholder="Your categories" style="width:100px" ng-click="getadmins(user)" ng-options="user.name for user in users">
+                        <option ng-repeat="user in users">{{user.name}}</option>
                     </select>
-
                 </div>
                 <div class="form-group">
-                    <p class="md-caption" style="color: white">You have selected: {{ user ? user : 'No one yet' }}</p>
+                    <p class="md-caption" style="color: white">You have selected: {{ user.name}}</p>
                 </div>
 
                 <div class="form-group" ng-show="logged">
-                    <label style="color: white">Category:</label>
-                    <input type="text" placeholder="Write secret's category" ng-model="category" class="form-control">
+                    <select ng-model="category" placeholder="Your categories" style="width:100px">
+                        <option ng-repeat="c in categories">{{c}}</option>
+                    </select>
                 </div>
                 <div class="form-group" ng-show="!logged">
                     <label style="color: white">{{ admins[0] ? admins[0] : 'Select user first' }}</label>
@@ -50,8 +50,13 @@
                     <input type="text" placeholder="Part {{admins[2]}}" ng-model="part3" class="form-control">
                 </div>
                 <div>
-                    <button type="button" class="btn btn-default btn-block btn-custom" ng-click="loginAdmins()" ng-show="!logged">Login Admins</button>
-                    <button type="button" class="btn btn-default btn-block btn-custom" ng-click="getUserSecrets()" ng-show="logged">Get Secrets from {{user}}</button>
+                    <div ng-show="!logged">
+                        <button type="button" class="btn btn-default btn-block btn-custom" ng-click="loginAdmins()" >Login Admins</button>
+                    </div>
+                    <div ng-show="logged">
+                        <button type="button" class="btn btn-default btn-block btn-custom" ng-click="getUserSecrets()" >Get Secrets from {{user.name}}</button>
+                    </div>
+
                 </div>
             </form>
             <div class="form-group" ng-show="logged">

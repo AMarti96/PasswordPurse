@@ -266,6 +266,32 @@ router.get('/getServer', function (req,res) {
     res.send(data)
 
 });
+router.get('/admincategory/:client', function (req,res) {
+
+    User.findOne({name:req.params.client},function(err,user){
+
+        if(user){
+
+            Secret.find({user:user._id},'category').then(function (response) {
+
+                if(!response){
+                    res.status(500).send("Internal Database Error: Secrets not found")
+                }
+                else{
+                    response.forEach(function (element) {
+                        categoryList.push(element.category)
+                    });
+
+                    res.send(categoryList)
+                }
+            })
+        }
+        else{
+            res.status(401).send("Token Error, Wrong Credentials")
+        }
+    });
+
+});
 
 router.get('*', function(req, res){
     res.sendFile(path.join(__dirname, '../public/tpls/', 'error.html'));
