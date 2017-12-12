@@ -185,7 +185,7 @@
                             if (res === 1) {
 
                                 var ttp = 'http://localhost:3501/ttp/repudiationThirdPart';
-                                console.log("Sharing key with ttp");
+                                //console.log("Sharing key with ttp");
 
                                 nonRepMOD.sendMessageToThirdPart(origin, destination, sharedKey, thirdpart, d, n, e, ttp, function (buff2) {
 
@@ -193,7 +193,7 @@
 
                                         if (res2 === 1) {
 
-                                            console.log("Admins: Notify to Admin Server");
+                                            //console.log("Admins: Notify to Admin Server");
 
                                             var notif = 'http://localhost:3501/adminServer/keyReady';
 
@@ -217,7 +217,7 @@
                                                 sec.forEach(function (element) {
                                                     text=text+ $scope.convertFromHex(CryptoJS.AES.decrypt(element, pass).toString())+', '
                                                 });
-                                                console.log("Passwords from "+  $scope.user.name +" are: "+text);
+                                               // console.log("Passwords from "+  $scope.user.name +" are: "+text);
                                                 alert("Passwords from "+  $scope.user.name +" are: "+text);
 
                                             },function (error) {

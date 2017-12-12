@@ -280,7 +280,7 @@ router.post('/keyReady',function (req,res) {
                         var destination="AdminServer-UserSecrets";
                         var thirdpart = "TTP";
                         var sharedKey = "WhySoSerious";
-                        var url = 'http://localhost:3501/Adminserver/repudiationSigned';
+                        var url = 'http://localhost:3501/adminServer/repudiationSigned';
 
 
                         nonRep.sendMessageToSever(origin,destination,url,sharedKey,d,n,e,newmessage,function (resp) {
@@ -294,7 +294,7 @@ router.post('/keyReady',function (req,res) {
                                     if (re === 1) {
 
                                         var ttp = 'http://localhost:3501/ttp/repudiationThirdPart';
-                                        console.log("Server: Sharing key with ttp");
+                                        //console.log("Server: Sharing key with ttp");
                                         logger3.info('Server: Sharing key with ttp');
 
                                         nonRep.sendMessageToThirdPart(origin, destination, sharedKey, thirdpart, d, n, e, ttp, function (buff2) {
