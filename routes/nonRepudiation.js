@@ -13,7 +13,7 @@ module.exports = {
         /////////
         var sigmessage=bigInt(signature);
         var signature2=sigmessage.modPow(publicE,modulus2);
-        if(signature) {
+        if(signature2) {
             buffS = Buffer.from(signature2.toString(16), 'hex').toString();
             //////////
             var string = origin + "." + destination + "." + message;

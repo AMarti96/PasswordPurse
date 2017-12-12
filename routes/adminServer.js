@@ -10,6 +10,22 @@ var Admin= require('../models/admins');
 var bigInt = require("big-integer");
 var CryptoJS = require("crypto-js");
 var nonRep = require('../../PasswordPurse/routes/nonRepudiation');
+var log4js = require('log4js');
+log4js.configure({
+    appenders: {
+        out : { type: 'console'},
+        ttp: {type: 'file', filename: 'logs/ttp.log', "maxLogSize": 10485760, "numBackups": 3},
+        admin :{ type: 'file', filename: 'logs/adminServer.log', "maxLogSize": 10485760, "numBackups": 3},
+        server :{ type: 'file', filename: 'logs/server.log', "maxLogSize": 10485760, "numBackups": 3}
+    },
+    categories: {
+        default: { appenders: ['out'], level: 'info' },
+        ttp : { appenders: ['ttp'], level:'info'},
+        admin : { appenders: ['admin'], level:'info'},
+        server : { appenders: ['server'], level:'info'}
+    }
+});
+var logger2 = log4js.getLogger('admin');
 var p=bigInt.zero;
 var q=bigInt.zero;
 var n=bigInt.zero;
@@ -104,13 +120,12 @@ router.get('/getusers',function (req,res) {
 
 router.post('/keyReady',function (req,res) {
 
-    console.log("Admin Server: key ready?");
-
  nonRep.consultTTP(req.body,function (buff) {
 
      if(buff!=0){
 
-         console.log("Admin Server: The shared key is: " + buff);
+         //console.log("Admin Server: The shared key is: " + buff);
+         logger2.info('Admin Server: The shared key is: ' + buff);
          var message;
          cryptograms.forEach(function (element) {
 
@@ -119,23 +134,14 @@ router.post('/keyReady',function (req,res) {
                      return el.origin !== req.body.AdminName;
                  });
                  message = CryptoJS.AES.decrypt(element.cryptogram, buff).toString(CryptoJS.enc.Utf8);
-                 console.log("Admin Server: The message is: " + message);
+                // console.log("Admin Server: The message is: " + message);
+                 logger2.info('Admin Server: The message is: ' + message)
              }
          });
 
          var parts = message.split(".");
          var user = parts[0];
          var category = parts[1];
-         var admin1 = parts[2].split("-")[0];
-         var parts1 = parts[2].split("-")[1];
-         var admin2 = parts[3].split("-")[0];
-         var parts2 = parts[3].split("-")[1];
-         var admin3 = parts[4].split("-")[0];
-         var parts3 = parts[4].split("-")[1];
-
-         var combine=secrets.combine([parts1,parts2,parts3])
-         var pass = secrets.hex2str(combine);
-
          var newmessage = user+"."+category;
          var origin="AdminServer";
          var destination="Server";
@@ -146,14 +152,16 @@ router.post('/keyReady',function (req,res) {
          nonRep.sendMessageToSever(origin,destination,url,sharedKey,d,n,e,newmessage,function (resp) {
 
              if (resp === undefined) {
-                 console.log("Error when sending message to admin server")
+                 console.log("Error when sending message to admin server");
+                 logger2.error('Error when sending message to admin server');
              }
              else {
                  nonRep.checkPayload(resp.origin, resp.destination, resp.message, serverN, serverE, resp.signature, function (re) {
                      if (re === 1) {
 
                          var ttp = 'http://localhost:3501/ttp/repudiationThirdPart';
-                         console.log("Admin Server: Sharing key with ttp");
+                         //console.log("Admin Server: Sharing key with ttp");
+                         logger2.info('Admin Server: Sharing key with ttp');
 
                          nonRep.sendMessageToThirdPart(origin, destination, sharedKey, thirdpart, d, n, e, ttp, function (buff2) {
 
@@ -180,18 +188,37 @@ router.post('/keyReady',function (req,res) {
                                      };
                                      request(req, function (error, response, body){
 
-                                         var parts = response.body.split(".");
-                                         var text = " ";
-                                         for(var i=0;i<parts.length-1;i++) {
-                                             text=text+ convertFromHex(CryptoJS.AES.decrypt(parts[i], pass).toString())+', '
+                                         if(response.body !== "0"){
+
+                                             nonRep.consultTTP(body,function (buff3) {
+
+                                                 if (buff3 != 0) {
+
+                                                    // console.log("Admin Server: The shared key is: " + buff3);
+                                                     logger2.info('Admin Server: The shared key is: '+buff3);
+                                                     var message2;
+                                                     cryptograms.forEach(function (element) {
+
+                                                         if (element.origin === body.AdminName) {
+                                                             cryptograms = cryptograms.filter(function (el) {
+                                                                 return el.origin !== body.AdminName;
+                                                             });
+                                                             message2 = CryptoJS.AES.decrypt(element.cryptogram, buff3).toString(CryptoJS.enc.Utf8);
+                                                           //  console.log("Admin Server: The message is: " + message2);
+                                                             logger2.info('Admin Server: The message is: '+message2);
+                                                         }
+
+                                                     });
+                                                     res.send(message2);
+                                                 }
+                                             });
                                          }
-                                         res.send(text);
                                      });
-
                                  }
-
                                  else {
-                                     console.log("Admin Server: Error when checking payload from TTP")
+                                     res.send("0");
+                                     console.log("Admin Server: Error when checking payload from TTP");
+                                     logger2.error('Admin Server: Error when checking payload from TTP');
                                  }
 
                              });
@@ -199,17 +226,17 @@ router.post('/keyReady',function (req,res) {
                          });
                      }
                      else {
-                         console.log("Admin Server: Something went wrong...")
+                         res.send("0");
+                         console.log("Admin Server: Something went wrong...");
+                         logger2.error('Admin Server: Something went wrong...');
                      }
                  });
              }
-
-
          });
 
      }
      else{
-         res.send(buff);
+         res.send("0");
      }
 
 
@@ -228,8 +255,9 @@ router.post('/repudiationSigned',function (req,res) {
         genNRSA(function () {})
     }
     else{
-        console.log("Admin Server: Message from "+ req.body.origin);
-        console.log(req.body.origin);
+       // console.log("Admin Server: Message from "+ req.body.origin);
+        logger2.info('Admin Server: Message from '+ req.body.origin)
+       // console.log(req.body.origin);
 
         nonRep.checkPayload(req.body.origin,req.body.destination,req.body.message,req.body.modulus,req.body.publicE,req.body.signature,function (buff) {
 
@@ -242,12 +270,15 @@ router.post('/repudiationSigned',function (req,res) {
                         cryptogram:req.body.message
                     };
                     cryptograms.push(dat);
+                 //   console.log("Admin Server: Cryptogram pushed");
+                    logger2.info('Admin Server: Cryptogram pushed');
 
                     res.send(data)
                 });
             }
             else {
                 console.log("Payload not equal");
+                logger2.error('Payload not equal');
                 res.send("ERROR")
             }
         });
@@ -256,13 +287,25 @@ router.post('/repudiationSigned',function (req,res) {
 
 
 router.get('/getServer', function (req,res) {
+
     if(n===bigInt.zero){
         genNRSA();
         console.log("RSA Admin Generated Correctly");
-        request('http://localhost:3501/server/getServer', function (error, response, body) {
-            var dat = JSON.parse(response.body);
+        var dat = {
+            Amodulus: n,
+            AdminE: e
+        };
+        var re = {
+            url: 'http://localhost:3501/server/genServer',
+            method: 'POST',
+            json:true,
+            body: dat
+        };
+        request(re, function (error, response, body){
+            var dat = response.body;
             serverN = dat.Smodulus;
             serverE = dat.ServerE;
+
         });
     }
     var data={

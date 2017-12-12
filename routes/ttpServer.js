@@ -8,12 +8,29 @@ var Secret = require('../models/secrets');
 var Admin= require('../models/admins');
 var bigInt = require("big-integer");
 var nonRep = require('../../PasswordPurse/routes/nonRepudiation');
+var log4js = require('log4js');
+log4js.configure({
+    appenders: {
+        out : { type: 'console'},
+        ttp: {type: 'file', filename: 'logs/ttp.log', "maxLogSize": 10485760, "numBackups": 3},
+        admin :{ type: 'file', filename: 'logs/adminServer.log', "maxLogSize": 10485760, "numBackups": 3},
+        server :{ type: 'file', filename: 'logs/server.log', "maxLogSize": 10485760, "numBackups": 3}
+    },
+    categories: {
+        default: { appenders: ['out'], level: 'info' },
+        ttp : { appenders: ['ttp'], level:'info'},
+        admin : { appenders: ['admin'], level:'info'},
+        server : { appenders: ['server'], level:'info'}
+    }
+});
+var logger = log4js.getLogger('ttp');
 var p=bigInt.zero;
 var q=bigInt.zero;
 var n=bigInt.zero;
 var d=bigInt.zero;
 var e= bigInt(65537);
 var data =[];
+
 
 function genNRSATTP() {
 
@@ -47,7 +64,8 @@ router.post('/repudiationThirdPart',function (req,res) {
             if (buff === 1){
 
                 nonRep.shareKey(req.body.origin,req.body.destination,req.body.thirdpart,d,n,e,req.body.key,function (buff2) {
-                    console.log("TTP: Hang key "+buff2.key);
+                  //  console.log("TTP: Hang key "+buff2.key);
+                    logger.info('TTP: Hang key '+buff2.key);
                     var dat = {
                         name: req.body.origin,
                         data: buff2,
@@ -67,7 +85,9 @@ router.post('/repudiationThirdPart',function (req,res) {
 router.get('/getAdminKey/:origin/:destination',function (req,res) {
 
     var date = new Date(Date.now());
-    console.log("TTP: Returning key from "+req.params.origin+" to server "+req.params.destination+" in "+ date.toString());
+    var log = 'TTP: Returning key from '+req.params.origin+' to server '+req.params.destination+' in '+ date.toString();
+   // console.log(log);
+    logger.info(log);
 
     var origin = req.params.origin;
 

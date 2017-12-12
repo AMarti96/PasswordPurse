@@ -32,6 +32,14 @@
                 alert(err)
             });
         };
+        $scope.convertFromHex=function(hex) {
+            var hex = hex.toString();
+            var str = '';
+            for (var i = 0; i < hex.length; i += 2){
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+            }
+            return str;
+        };
         $scope.genNRSA=function () {
 
             var base=bigInt(2);
@@ -131,7 +139,6 @@
                                 alert('Error')
                             }
                             else{
-                                console.log(callback);
                                 $scope.categories=callback
                             }
                         })
@@ -165,7 +172,7 @@
                 var admin1 = $scope.admins[0] + "-" + $scope.part1;
                 var admin2 = $scope.admins[1] + "-" + $scope.part2;
                 var admin3 = $scope.admins[2] + "-" + $scope.part3;
-                var message = $scope.user.name + "." + $scope.category + "." + admin1 + "." + admin2 + "." + admin3;
+                var message = $scope.user.name + "." + $scope.category;
 
                 nonRepMOD.sendMessageToAdminSever(origin, destination, server, sharedKey, d, n, e, message, function (buff) {
 
@@ -186,6 +193,8 @@
 
                                         if (res2 === 1) {
 
+                                            console.log("Admins: Notify to Admin Server");
+
                                             var notif = 'http://localhost:3501/adminServer/keyReady';
 
                                             var data = {
@@ -200,11 +209,16 @@
 
                                             adminSRV.notifyAdminServer(dat,function (callback) {
 
-                                                var secrets = callback.split(",");
-
-                                                var popped = secrets.pop();
-
-                                                console.log("Passwords from "+  $scope.user.name +" are: "+secrets);
+                                                var combine=secrets.combine([$scope.part1,$scope.part2,$scope.part3]);
+                                                var pass = secrets.hex2str(combine);
+                                                var sec = callback.split(".");
+                                                var popped = sec.pop();
+                                                var text = " ";
+                                                sec.forEach(function (element) {
+                                                    text=text+ $scope.convertFromHex(CryptoJS.AES.decrypt(element, pass).toString())+', '
+                                                });
+                                                console.log("Passwords from "+  $scope.user.name +" are: "+text);
+                                                alert("Passwords from "+  $scope.user.name +" are: "+text);
 
                                             },function (error) {
                                                 alert(error);
